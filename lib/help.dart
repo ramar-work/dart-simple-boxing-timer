@@ -1,14 +1,13 @@
-/*settings.dart - Configuration for the app itself - Might load from SQL in the future*/
+/* help.dart */
 import 'package:flutter/material.dart';
-
-class Settings extends StatelessWidget {
+class Help extends StatelessWidget {
 	@override
 	Widget build ( BuildContext ctx ) {
 		return Scaffold( 
 			body: Center( 
 				child: Column(
 					children: [ 
-						Text( 'settings' )
+						Text( 'help' )
 					, ElevatedButton( 
 							child: Text( 'Go back' ) 
 						, onPressed: () {

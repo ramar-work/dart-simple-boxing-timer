@@ -1,0 +1,1 @@
+/* Class for a type of exercise */

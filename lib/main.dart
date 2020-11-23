@@ -12,6 +12,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
 
 import 'settings.dart';
+import 'exercise.dart';
+import 'help.dart';
+import 'styling.dart';
+import 'audio.dart';
 
 const String app_title = "It's Boxing Time";
 
@@ -20,63 +24,27 @@ void main() => runApp( BoxingTimeApp() );
 class BoxingTimeApp extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
+
+		List<Exercise> types = [
+			Exercise( "Olympic", 180000, 30000, 17000, 100 )
+		, Exercise( "Pro", 180000, 30000, 17000, 100 )
+		, Exercise( "Custom", -1, -1, -1, -1 )
+		];
+
     return MaterialApp(
-      //home: new Home(),
       title: app_title,
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
 			routes: {
-				"/": (ctx) => Home() 
-			, "/help": (ctx) => Help() 
-			, "/settings": (ctx) => Settings() 
+				"/": (ctx) => Home( types.get( 0 ) )
+			, "/help": (ctx) => new Help() 
+			, "/settings": (ctx) => new Settings() 
 			}
     );
   }
 }
 
-
-class Settings extends StatelessWidget {
-	@override
-	Widget build ( BuildContext ctx ) {
-		return Scaffold( 
-			body: Center( 
-				child: Column(
-					children: [ 
-						Text( 'settings' )
-					, ElevatedButton( 
-							child: Text( 'Go back' ) 
-						, onPressed: () {
-								Navigator.pop( ctx );
-							}
-						)
-					]
-				)
-			)
-		);
-	}
-}
-
-class Help extends StatelessWidget {
-	@override
-	Widget build ( BuildContext ctx ) {
-		return Scaffold( 
-			body: Center( 
-				child: Column(
-					children: [ 
-						Text( 'help' )
-					, ElevatedButton( 
-							child: Text( 'Go back' ) 
-						, onPressed: () {
-								Navigator.pop( ctx );
-							}
-						)
-					]
-				)
-			)
-		);
-	}
-}
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -84,39 +52,33 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-/*
-we'll need a timer within this widget
-*/
+
 class _HomeState extends State<Home> {
 
-	//Granularity of our timer
-	final resolution = 50; //const Duration( milliseconds: 50 );
-	final double _elevation = 3;
-	final double _xButtonSize = 60;
-
+	//Private configuration that will most likely never change
 	BuildContext _ctx;
-
-	//Colors
-	Color _mainColor;
-
-	//Pointer to repeating timer.
+	final double _elevation = 3;
+	final List<int> _impendingEndOptions = [ 2000, 10000, 10000, -1 ]; //This should almost always be 10 secs
+	final int _resolution = 50;
+	final List<int> _roundLenOptions = [ 15000, 180000, 180000, -1 ];	//Length of workout time
+	final List<int> _restOptions = [ 2000, 60000, 30000, -1 ]; //Length of rest interval
+	final List<int> _roundLimitOptions = [ 2, 3, 12, -1 ]; //Round count
 	Timer _timer;
+	final int tswarn = 10000;	
+	final double _xButtonSize = 60;
+	Audio mainBell, warnBell;
 
-	//...
-	static final List<int> _roundLenOptions = [ 15000, 180000, 180000, -1 ];	//Length of workout time
-	static final List<int> _restOptions = [ 2000, 60000, 30000, -1 ]; //Length of rest interval
-	static final List<int> _roundLimitOptions = [ 2, 3, 12, -1 ]; //Round count
-	static final List<int> _impendingEndOptions = [ 2000, 10000, 10000, -1 ]; //Round count
+	//Theme
+	Color mainColor, settingsColor, helpColor, resetColor, bgColor, fgColor;
 
-	static final int tswarn = 10000;	
-	int _elapsedMs = 0;//Total time passed
-	int _secs = 0;//Display seconds
-	int _min = 0;//Display minutes
-	int _msecs = 0;//Display centiseconds
+	//User's selected type of workout
+	int type = 1;
+
+	//Time tracking variables.
+	int _elapsedMs = 0, _min = 0, _msecs = 0, _secs = 0;
 
 	//NOTE: All of this is set later
 	int _roundCurrent = 1;  //Place for the round
-	int _type = 1;   //Type of workout
 	int _roundLen = 0;
 	int _restLen = 0;
 	int _roundLimit = 0; 
@@ -133,10 +95,11 @@ class _HomeState extends State<Home> {
 
 	bool _tswarnTriggered = false;
 
+
 	//Update the time
   void _updateTime() {
 		setState( () {
-			var localms = ( _elapsedMs += resolution ) ~/ 1000;
+			var localms = ( _elapsedMs += _resolution ) ~/ 1000;
 			_secs = localms % 60;
 			_min = localms ~/ 60;
 			_msecs = _elapsedMs % 1000; 
@@ -149,13 +112,13 @@ class _HomeState extends State<Home> {
 			_timer.cancel();
 		else {
 			//Play the sound ONCE
-			!_alarmTriggered ? _playSound() : 0 ;
+			!_alarmTriggered ? mainBell.play() : 0 ;
 			_alarmTriggered = true;
 
-			_timer = Timer.periodic( new Duration( milliseconds: resolution ), ( Timer t ) {
+			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
 				_updateTime();
 				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( _len - tswarn ) ) ) {
-					_playtswarn();
+					warnBell.play();
 					_tswarnTriggered = true;
 				}
 				else if ( _elapsedMs >= _len ) {
@@ -168,8 +131,8 @@ class _HomeState extends State<Home> {
 						_roundText = ( rest ) ? "REST" : "ROUND ${ _roundCurrent }";
 						_elapsedMs = 0;
 						_len = ( rest ) ? _restLen : _roundLen; 	
-						_mainColor = ( rest ) ? Styling.rest : Styling.active; 	
-						_playSound();
+						mainColor = ( rest ) ? Styling.rest : Styling.active; 	
+						mainBell.play();	
 						_tswarnTriggered = false;
 					}
 				}
@@ -219,7 +182,7 @@ class _HomeState extends State<Home> {
 	MaterialButton watchButton() {
 		return new MaterialButton(
 			onPressed: _toggleTime
-		, color: _mainColor 
+		, color: mainColor 
 		, padding: EdgeInsets.only( left: 50.0, right: 50.0 )
 		, elevation: 3
 		, height: 400
@@ -252,46 +215,26 @@ class _HomeState extends State<Home> {
 		);
 	}
 
-
-	//AudioAgent audio;
-	//audio.playEndBell();
-	//audio.playWarningBell();
-
-
-	AudioCache ac_endbell;
-	AudioCache ac_tsbell;
-	var roundEndBell;
-	var roundTenSecondBell;
-
-	void _loadSounds() async {
-		roundEndBell = await ( await ac_endbell.load( 'wav/eor.wav' ) ).readAsBytes(); ;
-		roundTenSecondBell = await ( await ac_tsbell.load( 'wav/aeor.wav' ) ).readAsBytes(); ;
-	}
-
 	@override
 	initState() {
-		_roundLimit = _roundLimitOptions[ _type ];
-		_restLen = _restOptions[ _type ];
-		_len = _roundLen = _roundLenOptions[ _type ];
+		_roundLimit = _roundLimitOptions[ type ];
+		_restLen = _restOptions[ type ];
+		_len = _roundLen = _roundLenOptions[ type ];
 		_roundText = "ROUND ${ _roundCurrent }";
-		_mainColor = Styling.active;
-		ac_endbell = new AudioCache();
-		ac_tsbell = new AudioCache();
-		_loadSounds();
+		mainColor = Styling.active;
+		mainBell = new Audio( 'wav/eor.wav' );
+		warnBell = new Audio( 'wav/aeor.wav' );
 	}
 
 	//Stop the time
 	void _reset() {
-		debugPrint( "Reset pressed!" );
-
 		_timer.cancel();
 		_canceled = true;	
 		_alarmTriggered = false;
 		_tswarnTriggered = false;
-
 		setState( () {
 			_elapsedMs = 0;
-			_mainColor = Styling.active; 	
+			mainColor = Styling.active; 	
 			_secs = 0;
 			_min = 0;
 			_msecs = 0;
@@ -300,18 +243,10 @@ class _HomeState extends State<Home> {
 
 	//Start the timer.
 	void _startTimer() {
-		_timer = Timer.periodic( new Duration( milliseconds: resolution ), ( Timer t ) {
+		_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
 			_updateTime();
 			return t;
 		} );
-	}
-
-	void _playSound() {
-		ac_endbell.playBytes( roundEndBell );
-	}
-
-	void _playtswarn () {
-		ac_tsbell.playBytes( roundTenSecondBell );
 	}
 
   @override
@@ -330,7 +265,11 @@ class _HomeState extends State<Home> {
 						, xButton( Icons.restore, Colors.purple, _reset )
 						]
 					) 
-				, Spacer( flex: 1 )
+				, new Row(
+						children: [
+							Center( child: Text( 'Pro' ) ) 
+						]
+					) 
 				, new Row( 
 						children: [ 
 							Center( child: watchButton() ) 
