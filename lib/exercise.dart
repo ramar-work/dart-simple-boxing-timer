@@ -9,6 +9,7 @@ class Exercise {
 	int length;
 	int rest;
 	int warning;
+	int rounds;
 	int avg;
 
 	Exercise( 
@@ -16,7 +17,7 @@ class Exercise {
 		int this.length, 
 		int this.rest, 
 		int this.warning, 
-		int this.avg 
+		int this.rounds
 	);
 }
 

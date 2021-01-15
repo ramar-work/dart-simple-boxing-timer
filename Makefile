@@ -54,3 +54,14 @@ remote-build:
 	@echo $(SSH) $(REMOTE) "test -d $(BUILD_DIR)/ || mkdir -p $(BUILD_DIR)/"
 	@echo $(SCP) $(REMOTE)
 
+
+# filelist: list of files needed when copying flutter code to other places...
+filelist:
+	android/
+	bob.iml
+	ios/
+	lib/
+	pubspec.lock
+	pubspec.yaml
+	README.md
+	test/

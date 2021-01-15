@@ -29,10 +29,10 @@ class BoxingTimeApp extends StatelessWidget {
   Widget build(BuildContext ctx) {
 
 		List<Exercise> types = [
-		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 100 )
+		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
 /*
-		, Exercise( "Olympic", 180000, 30000, 10000, 100 )
-		, Exercise( "Pro", 180000, 30000, 10000, 100 )
+		, Exercise( "Olympic", 180000, 30000, 10000, 3 )
+		, Exercise( "Pro", 180000, 30000, 10000, 12 )
 		, Exercise( "Custom", -1, -1, -1, -1 )
 */
 		];
@@ -53,6 +53,7 @@ class BoxingTimeApp extends StatelessWidget {
 
 
 
+
 class Home extends StatefulWidget {
 	Exercise exercise;
 
@@ -62,57 +63,66 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+//Track time seperately
+class Time {
+	int elapsed = 0;
+	int min = 0;
+	int msecs = 0;
+	int secs = 0;
+
+	bool r_canceled = false;
+	bool r_rest = false;
+	bool r_triggered = false;
+	bool w_triggered = false;
+
+	Time();
+}
+
+
+//Define a round
+class Round {
+	int current;
+	int length;
+	String text;
+
+	Round( this.current, this.length );
+}
+
+
+
+//Define a theme
+class xTheme {
+	Color main, settings, help, reset, bg, fg;
+	xTheme(); 
+}
 
 
 class _HomeState extends State<Home> {
 	
-	//Set _exercise from here so we can see how it translates...
-	//Exercise _exercise;
-
-
 	//Private configuration that will most likely never change
 	final double _elevation = 3;
-	final int _resolution = 50;
+	final int    _resolution = 50;
+	final double _xButtonSize = 60;
 
 	//Private accessible fields
 	BuildContext _ctx;
 	Timer _timer;
-
-	final List<int> _impendingEndOptions = [ 2000, 10000, 10000, -1 ]; //This should almost always be 10 secs
-	final List<int> _roundLenOptions = [ 15000, 180000, 180000, -1 ];	//Length of workout time
-	final List<int> _restOptions = [ 2000, 60000, 30000, -1 ]; //Length of rest interval
-	final List<int> _roundLimitOptions = [ 2, 3, 12, -1 ]; //Round count
-	final int tswarn = 10000;	
-	final double _xButtonSize = 60;
-	Audio mainBell, warnBell;
+	Audio mbell, wbell;
 
 	//Theme
 	Color mainColor, settingsColor, helpColor, resetColor, bgColor, fgColor;
-
-	//User's selected type of workout
-	int type = 1;
+	//xTheme theme;
 
 	//Time tracking variables.
 	int _elapsedMs = 0, _min = 0, _msecs = 0, _secs = 0;
+	bool _canceled = true, rest = false, _alarmTriggered = false, _tswarnTriggered = false;
+	//Time time;
 
 	//NOTE: All of this is set later
-	int _roundCurrent = 1;  //Place for the round
-	int _roundLen = 0;
-	int _restLen = 0;
-	int _roundLimit = 0; 
-	int _len = 0;
+	//int _roundLen = 0; int _roundCurrent = 1; String _roundText;
+	Round round;
 
-	String _roundText;
-
-	//Canceled
-	bool _canceled = true;
-
-	bool rest = false;
-
-	bool _alarmTriggered = false;
-
-	bool _tswarnTriggered = false;
-
+	
 	//Update the time
   void _updateTime() {
 		setState( () {
@@ -123,33 +133,34 @@ class _HomeState extends State<Home> {
     });
   }
 
+
 	//Stop the time
 	void _toggleTime() {
 		if ( _canceled = !_canceled )
 			_timer.cancel();
 		else {
 			//Play the sound ONCE
-			( ! _alarmTriggered ) ? mainBell.play() : 0 ;
+			( ! _alarmTriggered ) ? mbell.play() : 0 ;
 			_alarmTriggered = true;
 
 			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
 				_updateTime();
-				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( _len - tswarn ) ) ) {
-					warnBell.play();
+				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( round.length - widget.exercise.warning ) ) ) {
+					wbell.play();
 					_tswarnTriggered = true;
 				}
-				else if ( _elapsedMs >= _len ) {
-					_roundCurrent += ( rest = !rest ) ? 0 : 1;
-					if ( !rest && ( _roundCurrent > _roundLimit ) ) {
+				else if ( _elapsedMs >= round.length ) {
+					round.current += ( rest = !rest ) ? 0 : 1;
+					if ( !rest && ( round.current == ( widget.exercise.rounds + 1 ) ) ) {
 						debugPrint( "@ end of workout." );
 						_timer.cancel();
 					}
 					else {
-						_roundText = ( rest ) ? "REST" : "ROUND ${ _roundCurrent }";
 						_elapsedMs = 0;
-						_len = ( rest ) ? _restLen : _roundLen; 	
+						round.text = ( rest ) ? "REST" : "ROUND ${round.current}";
+						round.length = ( rest ) ? widget.exercise.rest : widget.exercise.length; 	
 						mainColor = ( rest ) ? Styling.rest : Styling.active; 	
-						mainBell.play();	
+						mbell.play();
 						_tswarnTriggered = false;
 					}
 				}
@@ -157,6 +168,7 @@ class _HomeState extends State<Home> {
 			} );
 		}
 	}
+
 
 	//Stop the time
 	void _help() {
@@ -184,6 +196,7 @@ class _HomeState extends State<Home> {
 		);
 	}
 
+
 	//Generate a settings button
 	FloatingActionButton settingsButton() {
 		return new FloatingActionButton(
@@ -194,6 +207,7 @@ class _HomeState extends State<Home> {
 			},
 		);
 	}
+
 
 	//Generate the giant watch
 	MaterialButton watchButton() {
@@ -219,7 +233,7 @@ class _HomeState extends State<Home> {
 					)
 				,	Row( 
 						children: [ Text(
-							"${_roundText}" 
+							"${ round.text }" 
 						, style: TextStyle( letterSpacing: -2, fontSize: 40 )
 						, textAlign: TextAlign.center
 						)]
@@ -232,16 +246,6 @@ class _HomeState extends State<Home> {
 		);
 	}
 
-	@override
-	initState() {
-		_roundLimit = _roundLimitOptions[ type ];
-		_restLen = _restOptions[ type ];
-		_len = _roundLen = _roundLenOptions[ type ];
-		_roundText = "ROUND ${ _roundCurrent }";
-		mainColor = Styling.active;
-		mainBell = new Audio( 'wav/eor.wav' );
-		warnBell = new Audio( 'wav/aeor.wav' );
-	}
 
 	//Stop the time
 	void _reset() {
@@ -251,12 +255,13 @@ class _HomeState extends State<Home> {
 		_tswarnTriggered = false;
 		setState( () {
 			_elapsedMs = 0;
-			mainColor = Styling.active; 	
 			_secs = 0;
 			_min = 0;
 			_msecs = 0;
+			mainColor = Styling.active; 	
     });
 	}
+
 
 	//Start the timer.
 	void _startTimer() {
@@ -266,11 +271,20 @@ class _HomeState extends State<Home> {
 		} );
 	}
 
+
+	@override
+	initState() {
+		round = Round( 1, widget.exercise.length );
+		round.text = "ROUND ${round.current}";
+		mainColor = Styling.active;
+		mbell = new Audio( 'wav/eor.wav' );
+		wbell = new Audio( 'wav/aeor.wav' );
+	}
+
+
   @override
   Widget build(BuildContext ctx) {
 		_ctx = ctx;
-
-		//_exercise = new Exercise( "Wop", 180000, 30000, 10000, 100 );
 
 		//needs three rows
     return Scaffold(
