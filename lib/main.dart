@@ -17,18 +17,24 @@ import 'help.dart';
 import 'styling.dart';
 import 'audio.dart';
 
+
 const String app_title = "It's Boxing Time";
 
+
 void main() => runApp( BoxingTimeApp() );
+
 
 class BoxingTimeApp extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
 
 		List<Exercise> types = [
-			Exercise( "Olympic", 180000, 30000, 17000, 100 )
-		, Exercise( "Pro", 180000, 30000, 17000, 100 )
+		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 100 )
+/*
+		, Exercise( "Olympic", 180000, 30000, 10000, 100 )
+		, Exercise( "Pro", 180000, 30000, 10000, 100 )
 		, Exercise( "Custom", -1, -1, -1, -1 )
+*/
 		];
 
     return MaterialApp(
@@ -37,7 +43,7 @@ class BoxingTimeApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
 			routes: {
-				"/": (ctx) => Home( types.get( 0 ) )
+				"/": (ctx) => new Home( exercise: types[0] )
 			, "/help": (ctx) => new Help() 
 			, "/settings": (ctx) => new Settings() 
 			}
@@ -46,24 +52,36 @@ class BoxingTimeApp extends StatelessWidget {
 }
 
 
+
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+	Exercise exercise;
+
+  Home({Key key, @required this.exercise }) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 
+
 class _HomeState extends State<Home> {
+	
+	//Set _exercise from here so we can see how it translates...
+	//Exercise _exercise;
+
 
 	//Private configuration that will most likely never change
-	BuildContext _ctx;
 	final double _elevation = 3;
-	final List<int> _impendingEndOptions = [ 2000, 10000, 10000, -1 ]; //This should almost always be 10 secs
 	final int _resolution = 50;
+
+	//Private accessible fields
+	BuildContext _ctx;
+	Timer _timer;
+
+	final List<int> _impendingEndOptions = [ 2000, 10000, 10000, -1 ]; //This should almost always be 10 secs
 	final List<int> _roundLenOptions = [ 15000, 180000, 180000, -1 ];	//Length of workout time
 	final List<int> _restOptions = [ 2000, 60000, 30000, -1 ]; //Length of rest interval
 	final List<int> _roundLimitOptions = [ 2, 3, 12, -1 ]; //Round count
-	Timer _timer;
 	final int tswarn = 10000;	
 	final double _xButtonSize = 60;
 	Audio mainBell, warnBell;
@@ -95,7 +113,6 @@ class _HomeState extends State<Home> {
 
 	bool _tswarnTriggered = false;
 
-
 	//Update the time
   void _updateTime() {
 		setState( () {
@@ -112,7 +129,7 @@ class _HomeState extends State<Home> {
 			_timer.cancel();
 		else {
 			//Play the sound ONCE
-			!_alarmTriggered ? mainBell.play() : 0 ;
+			( ! _alarmTriggered ) ? mainBell.play() : 0 ;
 			_alarmTriggered = true;
 
 			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
@@ -252,6 +269,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext ctx) {
 		_ctx = ctx;
+
+		//_exercise = new Exercise( "Wop", 180000, 30000, 10000, 100 );
+
 		//needs three rows
     return Scaffold(
       body: Center( child: Column(
@@ -267,12 +287,16 @@ class _HomeState extends State<Home> {
 					) 
 				, new Row(
 						children: [
-							Center( child: Text( 'Pro' ) ) 
+						  Spacer()
+						, Center( child: Text( widget.exercise.typestring ) ) 
+						, Spacer()
 						]
 					) 
 				, new Row( 
 						children: [ 
-							Center( child: watchButton() ) 
+						  Spacer()
+						, Center( child: watchButton() ) 
+						, Spacer()
 						] )
 				, Spacer( flex: 2 )
 				]
