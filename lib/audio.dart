@@ -3,9 +3,7 @@ audio.dart
 
 https://pub.dev/packages/audioplayers/example
 */
-import 'dart:async';
 import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class Audio {
 	AudioCache _actx;

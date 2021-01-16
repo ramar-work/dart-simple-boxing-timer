@@ -7,16 +7,16 @@ TODO
 */
 import 'package:flutter/material.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
 
-import 'settings.dart';
+//Components
 import 'exercise.dart';
-import 'help.dart';
 import 'styling.dart';
 import 'audio.dart';
 
+//"Activities" / Pages
+import 'settings.dart';
+import 'help.dart';
 
 const String app_title = "It's Boxing Time";
 
@@ -29,12 +29,11 @@ class BoxingTimeApp extends StatelessWidget {
   Widget build(BuildContext ctx) {
 
 		List<Exercise> types = [
-		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
-/*
-		, Exercise( "Olympic", 180000, 30000, 10000, 3 )
-		, Exercise( "Pro", 180000, 30000, 10000, 12 )
-		, Exercise( "Custom", -1, -1, -1, -1 )
-*/
+		//Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
+		  Exercise( "Olympic", 180 * 1000, 10 * 1000, 60 * 1000, 3 )
+		, Exercise( "Pro"    , 180 * 1000, 10 * 1000, 30 * 1000, 12 )
+			//Loading from a file is the easiest thing to do...
+		, Exercise( "Custom" , -1, -1, -1, -1 )
 		];
 
     return MaterialApp(
@@ -54,15 +53,6 @@ class BoxingTimeApp extends StatelessWidget {
 
 
 
-class Home extends StatefulWidget {
-	Exercise exercise;
-
-  Home({Key key, @required this.exercise }) : super(key: key);
-
-  @override
-  _HomeState createState() => _HomeState();
-}
-
 //Track time seperately
 class Time {
 	int elapsed = 0;
@@ -77,6 +67,7 @@ class Time {
 
 	Time();
 }
+
 
 
 //Define a round
@@ -97,6 +88,185 @@ class xTheme {
 }
 
 
+
+//Help menu
+class Help extends StatelessWidget {
+	
+	//All are multi-line paragraphs	
+	final String intro = """
+	""";
+
+	final String olympic = """
+	""";
+
+	final String pro = """
+	""";
+
+	final String custom = """
+	""";
+
+  @override
+  Widget build(BuildContext ctx) {
+    return Scaffold( body: Center( child: Column(
+			crossAxisAlignment: CrossAxisAlignment.stretch,
+			children: <Widget>[ 
+				Spacer( flex: 1 )
+			,	new Row( 
+				 children: <Widget>[
+						Center( child: Text(
+							"Help",
+							textScaleFactor: 2.0, 
+							style: TextStyle( fontWeight: FontWeight.bold )
+						) )
+					])
+			,	Spacer( flex: 1 )
+			, new Row(
+					children: [
+						Spacer()
+					, Text(
+							"Random Text",
+							textScaleFactor: 1.5, 
+							style: TextStyle( fontStyle: FontStyle.italic )
+						)
+					, Spacer()
+					])
+			, Spacer( flex: 1 )
+			, new Row( 
+					children: [ 
+						Spacer()
+					, Center( child: Text( "bang" ) ) 
+					, Spacer()
+					] )
+			, Spacer( flex: 1 )
+			, new Row(
+					children: [
+						Spacer()
+					, new Image.asset( 'assets/img/ibtw.png' )
+					, Spacer()
+					]) 
+			, Spacer( flex: 2 )
+			]
+		) ) );
+	}
+}
+
+
+
+class Settings extends StatefulWidget {
+	final int wop = 0;
+
+ 	Settings({Key key}) : super(key: key);
+
+	@override
+  _SettingsState createState() => _SettingsState();
+}
+
+
+
+class _SettingsState extends State<Settings> {
+  @override
+	 Widget build(BuildContext ctx) {
+		return Scaffold( 
+			body: Center( 
+				child: Container(
+					padding: new EdgeInsets.all( 30.0 ),
+					//crossAxisAlignment: CrossAxisAlignment.stretch,
+					child: Column( children: <Widget>[ 
+						Spacer( flex: 2 )
+
+					,	new Row( 
+						 children: <Widget>[
+								Center( child: Text(
+									"Settings",
+									textScaleFactor: 4.0, 
+									style: TextStyle( fontWeight: FontWeight.bold )
+								) )
+							])
+
+					, new Container( 
+							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
+							child: Column( children: [
+								new Row( children: <Widget>[ 
+									Text( "General",
+										textScaleFactor: 2.0,
+										style: TextStyle( fontWeight: FontWeight.bold  ) ) 
+								] )
+
+							, Table(
+									//border:
+									children: [
+										TableRow( children: [
+											TableCell( child: Text( "Theme" ) )
+										, TableCell( child: Text( "Light | Dark", textAlign: TextAlign.right ) )
+										])
+									,	TableRow( children: [
+											TableCell( child: Text( "Bell" ) )
+										, TableCell( child: Text( "On | Off", textAlign: TextAlign.right ) )
+										])
+									,	TableRow( children: [
+											TableCell( child: Text( "10 Minute Warning" ) )
+										, TableCell( child: Text( "On | Off", textAlign: TextAlign.right ) )
+										])
+									,	TableRow( children: [
+											TableCell( child: Text( "Timer Type" ) )
+										, TableCell( child: Text( "Olympic | Pro | Custom", textAlign: TextAlign.right ) )
+										])
+									]
+								)
+							])
+					)
+
+					, new Container( 
+							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
+							child: Column( children: [
+								new Row( children: <Widget>[ 
+									Text( "Custom Timer"
+									, textScaleFactor: 2.0
+									, style: TextStyle( fontWeight: FontWeight.bold  ) )  
+									])
+
+							, Table(
+									//border:
+									children: [
+										TableRow( children: [
+											TableCell( child: Text( "Round Length" ) )
+										, TableCell( child: Text( "-" ) )
+										])
+									,	TableRow( children: [
+											TableCell( child: Text( "Round Count" ) )
+										, TableCell( child: Text( "-" ) )
+										])
+									,	TableRow( children: [
+											TableCell( child: Text( "Rest Interval" ) )
+										, TableCell( child: Text( "-" ) )
+										])
+									]
+								)
+							])
+						)
+
+					, Spacer( flex: 2 )
+					]
+			))) 
+		);
+	}
+}
+
+
+
+//....
+class Home extends StatefulWidget {
+	Exercise exercise;
+
+  Home({Key key, @required this.exercise }) : super(key: key);
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+
+
+//....
 class _HomeState extends State<Home> {
 	
 	//Private configuration that will most likely never change
@@ -297,21 +467,31 @@ class _HomeState extends State<Home> {
 							xButton( Icons.help_center, Colors.orange, _help )
 						, Spacer()
 						, xButton( Icons.restore, Colors.purple, _reset )
-						]
-					) 
+						])
 				, new Row(
 						children: [
 						  Spacer()
-						, Center( child: Text( widget.exercise.typestring ) ) 
+						, Center( child: Text(
+								widget.exercise.typestring,
+								textScaleFactor: 1.5, 
+								style: TextStyle( fontStyle: FontStyle.italic )
+							))
 						, Spacer()
-						]
-					) 
+						])
+				, Spacer( flex: 1 )
 				, new Row( 
 						children: [ 
 						  Spacer()
 						, Center( child: watchButton() ) 
 						, Spacer()
 						] )
+				, Spacer( flex: 1 )
+				, new Row(
+						children: [
+						  Spacer()
+						, new Image.asset( 'assets/img/ibtw.png' )
+						, Spacer()
+						]) 
 				, Spacer( flex: 2 )
 				]
 			) ),

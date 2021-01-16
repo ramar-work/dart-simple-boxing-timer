@@ -1,8 +1,7 @@
-/**
-exercise.dart
--------------
-
-**/
+///
+/// exercise.dart
+/// -------------
+///
 class Exercise {
 	String typestring;
 	int type;
@@ -13,11 +12,11 @@ class Exercise {
 	int avg;
 
 	Exercise( 
-		String this.typestring, 
-		int this.length, 
-		int this.rest, 
-		int this.warning, 
-		int this.rounds
+		this.typestring, 
+		this.length, 
+		this.rest, 
+		this.warning, 
+		this.rounds
 	);
 }
 

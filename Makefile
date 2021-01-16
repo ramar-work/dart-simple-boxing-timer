@@ -17,8 +17,18 @@ deploy:
 	flutter run
 
 
-# build : 
-build:
+# lint : Test for errors
+lint:
+	@flutter analyze lib | grep 'error'
+
+
+# lint : Test for errors AND stylistic notes
+analyze:
+	flutter analyze lib | grep 'error'
+
+
+# pkg : Builds an APK or other signed package (not like pkg on other file types)
+pkg:
 	flutter build
 
 
