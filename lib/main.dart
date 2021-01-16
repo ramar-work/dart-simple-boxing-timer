@@ -89,6 +89,30 @@ class xTheme {
 
 
 
+//Clickable areas / text should be easy now
+class Clickable {
+	String text;
+	BuildContext ctx;
+
+	//This should be static
+	aBuilder() {	
+		return Builder( 
+			builder: (ctx) => Container( 
+				child: GestureDetector(
+					onTap: () {
+						debugPrint( "Button Clicked." );
+					}
+				,	child: Text( text ) //this could just be a widget
+				)
+			)
+		);
+	}
+
+	Clickable( this.ctx, this.text );
+}
+
+
+
 //Help menu
 class Help extends StatelessWidget {
 	
