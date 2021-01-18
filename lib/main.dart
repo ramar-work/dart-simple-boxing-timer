@@ -13,10 +13,12 @@ import 'dart:async';
 import 'exercise.dart';
 import 'styling.dart';
 import 'audio.dart';
+import 'toggler.dart';
 
 //"Activities" / Pages
-import 'settings.dart';
-import 'help.dart';
+import 'pages/settings.dart';
+import 'pages/help.dart';
+
 
 const String app_title = "It's Boxing Time";
 
@@ -25,6 +27,11 @@ void main() => runApp( BoxingTimeApp() );
 
 
 class BoxingTimeApp extends StatelessWidget {
+
+	Exercise loadCustomExercise() {
+		return null;
+	}
+	
   @override
   Widget build(BuildContext ctx) {
 
@@ -32,7 +39,6 @@ class BoxingTimeApp extends StatelessWidget {
 		//Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
 		  Exercise( "Olympic", 180 * 1000, 10 * 1000, 60 * 1000, 3 )
 		, Exercise( "Pro"    , 180 * 1000, 10 * 1000, 30 * 1000, 12 )
-			//Loading from a file is the easiest thing to do...
 		, Exercise( "Custom" , -1, -1, -1, -1 )
 		];
 
@@ -43,8 +49,8 @@ class BoxingTimeApp extends StatelessWidget {
       ),
 			routes: {
 				"/": (ctx) => new Home( exercise: types[0] )
-			, "/help": (ctx) => new Help() 
-			, "/settings": (ctx) => new Settings() 
+			, "/help": (ctx) => new HelpPage() 
+			, "/settings": (ctx) => new SettingsPage() 
 			}
     );
   }
@@ -95,185 +101,16 @@ class Clickable {
 	BuildContext ctx;
 
 	//This should be static
-	aBuilder() {	
-		return Builder( 
-			builder: (ctx) => Container( 
-				child: GestureDetector(
-					onTap: () {
-						debugPrint( "Button Clicked." );
-					}
-				,	child: Text( text ) //this could just be a widget
-				)
-			)
+	Widget activate() {
+		return GestureDetector(
+			onTap: () {
+				debugPrint( "Button Clicked." );
+			}
+		,	child: Text( text ) //this could just be a widget
 		);
 	}
 
 	Clickable( this.ctx, this.text );
-}
-
-
-
-//Help menu
-class Help extends StatelessWidget {
-	
-	//All are multi-line paragraphs	
-	final String intro = """
-	""";
-
-	final String olympic = """
-	""";
-
-	final String pro = """
-	""";
-
-	final String custom = """
-	""";
-
-  @override
-  Widget build(BuildContext ctx) {
-    return Scaffold( body: Center( child: Column(
-			crossAxisAlignment: CrossAxisAlignment.stretch,
-			children: <Widget>[ 
-				Spacer( flex: 1 )
-			,	new Row( 
-				 children: <Widget>[
-						Center( child: Text(
-							"Help",
-							textScaleFactor: 2.0, 
-							style: TextStyle( fontWeight: FontWeight.bold )
-						) )
-					])
-			,	Spacer( flex: 1 )
-			, new Row(
-					children: [
-						Spacer()
-					, Text(
-							"Random Text",
-							textScaleFactor: 1.5, 
-							style: TextStyle( fontStyle: FontStyle.italic )
-						)
-					, Spacer()
-					])
-			, Spacer( flex: 1 )
-			, new Row( 
-					children: [ 
-						Spacer()
-					, Center( child: Text( "bang" ) ) 
-					, Spacer()
-					] )
-			, Spacer( flex: 1 )
-			, new Row(
-					children: [
-						Spacer()
-					, new Image.asset( 'assets/img/ibtw.png' )
-					, Spacer()
-					]) 
-			, Spacer( flex: 2 )
-			]
-		) ) );
-	}
-}
-
-
-
-class Settings extends StatefulWidget {
-	final int wop = 0;
-
- 	Settings({Key key}) : super(key: key);
-
-	@override
-  _SettingsState createState() => _SettingsState();
-}
-
-
-
-class _SettingsState extends State<Settings> {
-  @override
-	 Widget build(BuildContext ctx) {
-		return Scaffold( 
-			body: Center( 
-				child: Container(
-					padding: new EdgeInsets.all( 30.0 ),
-					//crossAxisAlignment: CrossAxisAlignment.stretch,
-					child: Column( children: <Widget>[ 
-						Spacer( flex: 2 )
-
-					,	new Row( 
-						 children: <Widget>[
-								Center( child: Text(
-									"Settings",
-									textScaleFactor: 4.0, 
-									style: TextStyle( fontWeight: FontWeight.bold )
-								) )
-							])
-
-					, new Container( 
-							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
-							child: Column( children: [
-								new Row( children: <Widget>[ 
-									Text( "General",
-										textScaleFactor: 2.0,
-										style: TextStyle( fontWeight: FontWeight.bold  ) ) 
-								] )
-
-							, Table(
-									//border:
-									children: [
-										TableRow( children: [
-											TableCell( child: Text( "Theme" ) )
-										, TableCell( child: Text( "Light | Dark", textAlign: TextAlign.right ) )
-										])
-									,	TableRow( children: [
-											TableCell( child: Text( "Bell" ) )
-										, TableCell( child: Text( "On | Off", textAlign: TextAlign.right ) )
-										])
-									,	TableRow( children: [
-											TableCell( child: Text( "10 Minute Warning" ) )
-										, TableCell( child: Text( "On | Off", textAlign: TextAlign.right ) )
-										])
-									,	TableRow( children: [
-											TableCell( child: Text( "Timer Type" ) )
-										, TableCell( child: Text( "Olympic | Pro | Custom", textAlign: TextAlign.right ) )
-										])
-									]
-								)
-							])
-					)
-
-					, new Container( 
-							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
-							child: Column( children: [
-								new Row( children: <Widget>[ 
-									Text( "Custom Timer"
-									, textScaleFactor: 2.0
-									, style: TextStyle( fontWeight: FontWeight.bold  ) )  
-									])
-
-							, Table(
-									//border:
-									children: [
-										TableRow( children: [
-											TableCell( child: Text( "Round Length" ) )
-										, TableCell( child: Text( "-" ) )
-										])
-									,	TableRow( children: [
-											TableCell( child: Text( "Round Count" ) )
-										, TableCell( child: Text( "-" ) )
-										])
-									,	TableRow( children: [
-											TableCell( child: Text( "Rest Interval" ) )
-										, TableCell( child: Text( "-" ) )
-										])
-									]
-								)
-							])
-						)
-
-					, Spacer( flex: 2 )
-					]
-			))) 
-		);
-	}
 }
 
 
@@ -366,7 +203,7 @@ class _HomeState extends State<Home> {
 
 	//Stop the time
 	void _help() {
-		debugPrint( "Help pressed!" );
+		debugPrint( "HelpPage pressed!" );
 		Navigator.pushNamed( _ctx, "/help" );
 		//( _canceled = !_canceled ) ? 0 : _timer.cancel();
 	}
