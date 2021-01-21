@@ -61,7 +61,7 @@ class HelpPage extends StatelessWidget {
 					, new Image.asset( 'assets/img/ibtw.png' )
 					, Spacer()
 					]) 
-			, ElevatedButton( 
+			, RaisedButton( 
 					child: Text( 'Go back' ) 
 				, onPressed: () {
 						Navigator.pop( ctx );

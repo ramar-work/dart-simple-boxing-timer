@@ -33,9 +33,8 @@ class TogglerState extends State<Toggler> {
 class Toggler extends StatefulWidget {
 	
 	List<String> keys;
-	int setting; 
 
- 	Toggler({Key key, @required this.setting, @required this.keys}) : super(key: key);
+ 	Toggler({Key key, @required this.keys}) : super(key: key);
 
 	@override
 	TogglerState createState() => TogglerState(); 

@@ -12,7 +12,7 @@ import 'dart:async';
 //Components
 import 'exercise.dart';
 import 'styling.dart';
-import 'audio.dart';
+//import 'audio.dart';
 import 'toggler.dart';
 
 //"Activities" / Pages
@@ -44,9 +44,11 @@ class BoxingTimeApp extends StatelessWidget {
 
     return MaterialApp(
       title: app_title,
+			/*
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+			*/
 			routes: {
 				"/": (ctx) => new Home( exercise: types[0] )
 			, "/help": (ctx) => new HelpPage() 
@@ -138,7 +140,7 @@ class _HomeState extends State<Home> {
 	//Private accessible fields
 	BuildContext _ctx;
 	Timer _timer;
-	Audio mbell, wbell;
+	//Audio mbell, wbell;
 
 	//Theme
 	Color mainColor, settingsColor, helpColor, resetColor, bgColor, fgColor;
@@ -171,13 +173,13 @@ class _HomeState extends State<Home> {
 			_timer.cancel();
 		else {
 			//Play the sound ONCE
-			( ! _alarmTriggered ) ? mbell.play() : 0 ;
+			( ! _alarmTriggered ) ? 0 /*mbell.play()*/ : 0 ;
 			_alarmTriggered = true;
 
 			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
 				_updateTime();
 				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( round.length - widget.exercise.warning ) ) ) {
-					wbell.play();
+					//wbell.play();
 					_tswarnTriggered = true;
 				}
 				else if ( _elapsedMs >= round.length ) {
@@ -191,7 +193,7 @@ class _HomeState extends State<Home> {
 						round.text = ( rest ) ? "REST" : "ROUND ${round.current}";
 						round.length = ( rest ) ? widget.exercise.rest : widget.exercise.length; 	
 						mainColor = ( rest ) ? Styling.rest : Styling.active; 	
-						mbell.play();
+						//mbell.play();
 						_tswarnTriggered = false;
 					}
 				}
@@ -308,8 +310,8 @@ class _HomeState extends State<Home> {
 		round = Round( 1, widget.exercise.length );
 		round.text = "ROUND ${round.current}";
 		mainColor = Styling.active;
-		mbell = new Audio( 'wav/eor.wav' );
-		wbell = new Audio( 'wav/aeor.wav' );
+		//mbell = new Audio( 'wav/eor.wav' );
+		//wbell = new Audio( 'wav/aeor.wav' );
 	}
 
 
@@ -323,9 +325,9 @@ class _HomeState extends State<Home> {
 				crossAxisAlignment: CrossAxisAlignment.stretch,
 				children: <Widget>[ 
 					Spacer( flex: 1 )
-				,	new Row( 
+				,	new Row(
 					 children: <Widget>[
-							xButton( Icons.help_center, Colors.orange, _help )
+							xButton( Icons.help, Colors.orange, _help )
 						, Spacer()
 						, xButton( Icons.restore, Colors.purple, _reset )
 						])

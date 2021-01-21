@@ -165,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
 							])
 						)
 
-					, ElevatedButton( 
+					, RaisedButton( 
 							child: Text( 'Go back' ) 
 						, onPressed: () {
 								Navigator.pop( ctx );
