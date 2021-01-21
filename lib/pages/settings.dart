@@ -64,21 +64,20 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
-		Exercise exercise; 
+	Exercise exercise; 
 
-		//Method that updates the exercise struct above 
-		void _u( String text, int value ) {
-			setState( () {
-				if ( text == "length" )
-					exercise.length = value;	
-				else if ( text == "rest" )
-					exercise.rest = value;	
-				else if ( text == "rounds" ) {
-					exercise.rounds = value;	
-				}
-			} );	
-		}
-
+	//Method that updates the exercise struct above 
+	void _u( String text, int value ) {
+		setState( () {
+			if ( text == "length" )
+				exercise.length = value;	
+			else if ( text == "rest" )
+				exercise.rest = value;	
+			else if ( text == "rounds" ) {
+				exercise.rounds = value;	
+			}
+		} );	
+	}
 
   @override
 	Widget build( BuildContext ctx ) {

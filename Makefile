@@ -1,9 +1,11 @@
 NAME=ibt
 MAC_REMOTE=mac
 WIN_REMOTE=win
-BUILD_DIR=prj/$(NAME)
-SCP=rsync -arvz
+BUILD_DIR=~/prj/$(NAME)
+MAC_REMOTE_BIN=/usr/local/flutter/bin/flutter
+SCP=rsync -arz
 SSH=ssh
+FILELIST=./android ./assets ./ios ./lib ./test Makefile pubspec.lock pubspec.yaml
 
 # list : List all the targets and what they do
 list:
@@ -22,7 +24,7 @@ lint:
 	@flutter analyze lib | grep 'error'
 
 
-# lint : Test for errors AND stylistic notes
+# analyze : Test for errors AND stylistic notes
 analyze:
 	flutter analyze lib | grep 'error'
 
@@ -37,6 +39,7 @@ ios: REMOTE=$(MAC_REMOTE)
 ios: remote-build
 	@printf '' > /dev/null
 
+
 # android : syncs code and builds a version of this app on another Android capable system
 android: REMOTE=
 android:
@@ -48,7 +51,11 @@ finalize:
 	printf '' > /dev/null
 
 
-# checks for ssh, a build dir, rsync and anything else...
+# filelist: show list of files needed when copying flutter code to other places...
+filelist:
+	echo $(FILELIST)
+
+
 checks:
 	@test ! -z "$(BUILD_DIR)/" || printf "No build directory specified.  Stopping.\n" > /dev/stderr
 	@test ! -z "$(BUILD_DIR)/"
@@ -59,19 +66,10 @@ checks:
 
 
 remote-build:
-	@test ! -z "$(BUILD_DIR)/" || printf "No build directory specified.  Stopping.\n" > /dev/stderr
-	@test ! -z "$(BUILD_DIR)/"
-	@echo $(SSH) $(REMOTE) "test -d $(BUILD_DIR)/ || mkdir -p $(BUILD_DIR)/"
-	@echo $(SCP) $(REMOTE)
+	test ! -z "$(BUILD_DIR)/" || printf "No build directory specified.  Stopping.\n" > /dev/stderr
+	test ! -z "$(BUILD_DIR)/"
+	$(SSH) $(REMOTE) "test -d $(BUILD_DIR)/ || mkdir -p $(BUILD_DIR)/build/"
+	$(SCP) $(FILELIST) $(REMOTE):$(BUILD_DIR)/
+	$(SSH) $(REMOTE) "cd $(BUILD_DIR) && $(MAC_REMOTE_BIN) run"
 
 
-# filelist: list of files needed when copying flutter code to other places...
-filelist:
-	android/
-	bob.iml
-	ios/
-	lib/
-	pubspec.lock
-	pubspec.yaml
-	README.md
-	test/
