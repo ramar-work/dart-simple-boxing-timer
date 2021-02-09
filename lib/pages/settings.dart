@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import '../toggler.dart';
 import '../input.dart';
 import '../exercise.dart';
-
+import 'dart:math';
 
 
 class ExerciseInput extends StatefulWidget {
-
 	//reference to an object coming from elsewhere	
 	Exercise exercise;
 	void Function( String, int ) updater;
@@ -79,10 +78,12 @@ class _SettingsPageState extends State<SettingsPage> {
 		} );	
 	}
 
+
+
   @override
 	Widget build( BuildContext ctx ) {
 
-		exercise = new Exercise( "Custom", 0, 0, 0, 0 );
+		//exercise = new Exercise( "Custom", 0, 0, 0, 0 );
 
 		return Scaffold( 
 			body: Center( 
@@ -93,12 +94,35 @@ class _SettingsPageState extends State<SettingsPage> {
 
 					,	new Row( 
 						 children: <Widget>[
-								Center( child: Text(
-									"Settings",
-									textScaleFactor: 4.0, 
-									style: TextStyle( fontWeight: FontWeight.bold )
-								) )
-							])
+								Align( 
+									alignment: Alignment.topLeft
+								,	child: Text(
+										"Settings",
+										textScaleFactor: 4.0, 
+										style: TextStyle( fontWeight: FontWeight.bold )
+									) 
+								)
+							,	Spacer( flex: 1 )
+							,	Align(
+									alignment: Alignment.topRight
+								,	child: new MaterialButton( 
+										child: Transform.rotate( 
+											angle: 180 * pi/180,
+											child: Icon( Icons.arrow_right_alt, color: Colors.grey, size: 40 )
+										)
+									, color: Colors.grey[50]
+									, height: 70.0
+									, minWidth: 35.0
+									, shape: new RoundedRectangleBorder( 
+											borderRadius: new BorderRadius.circular( 40 )
+										)
+									, onPressed: () {
+											Navigator.pop( ctx );
+										}
+									)
+								)
+							]
+						)
 
 					, new Container( 
 							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
@@ -110,29 +134,43 @@ class _SettingsPageState extends State<SettingsPage> {
 								])
 
 							, Table(
-									children: [
+								  defaultVerticalAlignment: TableCellVerticalAlignment.middle
+								,	children: [
 										TableRow( children: [
 											TableCell( child: Text( "Theme" ) )
-										, TableCell( child: new Toggler( keys: [ "Light", "Dark" ] ) )
+										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "Light", "Dark" ] ) ) )
 										])
+									,	TableRow( children: [ 
+											TableCell( child: Text( "" ) ), 
+											TableCell( child: Text( "" ) ) ] )
 									,	TableRow( children: [
 											TableCell( child: Text( "Bell" ) )
-										, TableCell( child: new Toggler( keys: [ "On", "Off" ] ) )
+										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) ) )
 										])
+									,	TableRow( children: [ 
+											TableCell( child: Text( "" ) ), 
+											TableCell( child: Text( "" ) ) ] )
 									,	TableRow( children: [
-											TableCell( child: Text( "10 Minute Warning" ) )
-										, TableCell( child: new Toggler( keys: [ "On", "Off" ] ) )
+											TableCell( child: Text( "10 Second Warning" ) )
+										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) ) )
 										])
+									,	TableRow( children: [ 
+											TableCell( child: Text( "" ) ), 
+											TableCell( child: Text( "" ) ) ] )
 									,	TableRow( children: [
 											TableCell( child: Text( "Timer Type" ) )
 										, TableCell( 
-												child: new Toggler( keys: [ "Olympic", "Pro", "Custom" ] )
+												child: Center( child: new Toggler( 
+													sel: 0, keys: [ "Olympic", "Pro" /*, "Custom" */ ] ) )
 											)
 										])
 								])
 							])
 					)
 
+					, Spacer( flex: 2 )
+			
+					/*
 					, new Container( 
 							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
 							child: Column( children: [
@@ -143,43 +181,87 @@ class _SettingsPageState extends State<SettingsPage> {
 									])
 
 							, Table(
-									//border:
-									children: [
+								  defaultVerticalAlignment: TableCellVerticalAlignment.middle
+								, children: [
 										TableRow( children: [
 											TableCell( child: Text( "Round Length" ) )
 										, TableCell( child: 
-												ExerciseInput( field: "length", initial: exercise.length , updater: _u ) )
+												Row( 
+													mainAxisAlignment: MainAxisAlignment.end
+												,	children: [ 
+														Text( "0", textScaleFactor: 1.5 )
+													,	Column( children: [
+															new MaterialButton( 
+																child: Icon( Icons.arrow_circle_up, size: 30 )
+															, onPressed: () {} 
+															)
+														, new MaterialButton( 
+																child: Icon( Icons.arrow_circle_down, size: 30 )
+															, onPressed: () {} 
+															)
+														])
+													]
+												)
+											)
 										])
+
+									,	TableRow( children: [ 
+											TableCell( child: Text( "" ) ), 
+											TableCell( child: Text( "" ) ) ] )
+
 									,	TableRow( children: [
 											TableCell( child: Text( "Round Count" ) )
-										, TableCell( child: 
-												ExerciseInput( field: "rounds", initial: exercise.rounds, updater: _u ) )
-										])
+										, TableCell( 
+														child: Row( 
+															mainAxisAlignment: MainAxisAlignment.end
+														,	children: [ 
+															Text( "0", textScaleFactor: 1.5 )
+														,	Column( children: [
+																new MaterialButton( 
+																	child: Icon( Icons.arrow_circle_up, size: 30 )
+																, onPressed: () {} 
+																)
+															, new MaterialButton( 
+																	child: Icon( Icons.arrow_circle_down, size: 30 )
+																, onPressed: () {} 
+																)
+														])
+													])
+												)
+											])
+
+									,	TableRow( children: [ 
+											TableCell( child: Text( "" ) ), 
+											TableCell( child: Text( "" ) ) ] )
+
 									,	TableRow( children: [
 											TableCell( child: Text( "Rest Interval" ) )
 										, TableCell( child: 
-												ExerciseInput( field: "rest", initial: exercise.rest, updater: _u ) )
+												Row( 
+													mainAxisAlignment: MainAxisAlignment.end
+												,	children: [ 
+															Text( "0", textScaleFactor: 1.5 )
+														,	Column( children: [
+																new MaterialButton( 
+																	child: Icon( Icons.arrow_circle_up, size: 30 )
+																, height: 2 
+																, onPressed: () {} 
+																)
+															, new MaterialButton( 
+																	child: Icon( Icons.arrow_circle_down, size: 30 )
+																, height: 2
+																, onPressed: () {} 
+																)
+														])
+													]
+												)
+											)
 										])
 									]
 								)
 							])
 						)
-
-					, RaisedButton( 
-							child: Text( 'Go back' ) 
-						, onPressed: () {
-								Navigator.pop( ctx );
-							}
-						)
-
-					, Text( """
-						This widget is for testing only: 
-						L ${ exercise.length }
-						R ${ exercise.rounds }
-						R ${ exercise.rest }
-						""" )
-
-					, Spacer( flex: 2 )
+					*/
 					]
 			))) 
 		);

@@ -12,7 +12,7 @@ import 'dart:async';
 //Components
 import 'exercise.dart';
 import 'styling.dart';
-//import 'audio.dart';
+import 'audio.dart';
 import 'toggler.dart';
 
 //"Activities" / Pages
@@ -140,7 +140,7 @@ class _HomeState extends State<Home> {
 	//Private accessible fields
 	BuildContext _ctx;
 	Timer _timer;
-	//Audio mbell, wbell;
+	Audio bell, mbell, wbell;
 
 	//Theme
 	Color mainColor, settingsColor, helpColor, resetColor, bgColor, fgColor;
@@ -173,7 +173,7 @@ class _HomeState extends State<Home> {
 			_timer.cancel();
 		else {
 			//Play the sound ONCE
-			( ! _alarmTriggered ) ? 0 /*mbell.play()*/ : 0 ;
+			( ! _alarmTriggered ) ? bell.play( 'eor.wav' ) : 0 ;
 			_alarmTriggered = true;
 
 			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
@@ -310,6 +310,7 @@ class _HomeState extends State<Home> {
 		round = Round( 1, widget.exercise.length );
 		round.text = "ROUND ${round.current}";
 		mainColor = Styling.active;
+		bell = new Audio( [ 'eor.wav', 'aeor.wav' ] );
 		//mbell = new Audio( 'wav/eor.wav' );
 		//wbell = new Audio( 'wav/aeor.wav' );
 	}
