@@ -63,27 +63,37 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
-	Exercise exercise; 
+	BuildContext _ctx;
+
+	Exercise _exercise; 
 
 	//Method that updates the exercise struct above 
 	void _u( String text, int value ) {
 		setState( () {
 			if ( text == "length" )
-				exercise.length = value;	
+				_exercise.length = value;	
 			else if ( text == "rest" )
-				exercise.rest = value;	
+				_exercise.rest = value;	
 			else if ( text == "rounds" ) {
-				exercise.rounds = value;	
+				_exercise.rounds = value;	
 			}
 		} );	
 	}
 
 
+	//Update app settings
+	saveSettings() async  {
+		Navigator.pop( _ctx );
+		Exercise.persist( _exercise );
+	}
+
 
   @override
 	Widget build( BuildContext ctx ) {
-
-		//exercise = new Exercise( "Custom", 0, 0, 0, 0 );
+		_ctx = ctx;
+		//TODO: check for a record first, then recall
+		//exercise = Exercise.check() ? Exercise.recall( e ) : ;
+		_exercise = new Exercise( "", 0, 0, 0, 0 );
 
 		return Scaffold( 
 			body: Center( 
@@ -116,9 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
 									, shape: new RoundedRectangleBorder( 
 											borderRadius: new BorderRadius.circular( 40 )
 										)
-									, onPressed: () {
-											Navigator.pop( ctx );
-										}
+									, onPressed: saveSettings
 									)
 								)
 							]
