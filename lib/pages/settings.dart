@@ -136,23 +136,31 @@ class _SettingsPageState extends State<SettingsPage> {
 							, Table(
 								  defaultVerticalAlignment: TableCellVerticalAlignment.middle
 								,	children: [
+/*
 										TableRow( children: [
 											TableCell( child: Text( "Theme" ) )
 										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "Light", "Dark" ] ) ) )
 										])
-									,	TableRow( children: [ 
+*/
+									 	TableRow( children: [ 
 											TableCell( child: Text( "" ) ), 
 											TableCell( child: Text( "" ) ) ] )
 									,	TableRow( children: [
 											TableCell( child: Text( "Bell" ) )
-										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) ) )
+										, TableCell( child: Align( 
+												alignment: Alignment.topRight,
+												child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) 
+											) )
 										])
 									,	TableRow( children: [ 
 											TableCell( child: Text( "" ) ), 
 											TableCell( child: Text( "" ) ) ] )
 									,	TableRow( children: [
 											TableCell( child: Text( "10 Second Warning" ) )
-										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) ) )
+										, TableCell( child: Align( 
+												alignment: Alignment.topRight,
+												child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) 
+											) )
 										])
 									,	TableRow( children: [ 
 											TableCell( child: Text( "" ) ), 
@@ -160,8 +168,10 @@ class _SettingsPageState extends State<SettingsPage> {
 									,	TableRow( children: [
 											TableCell( child: Text( "Timer Type" ) )
 										, TableCell( 
-												child: Center( child: new Toggler( 
-													sel: 0, keys: [ "Olympic", "Pro" /*, "Custom" */ ] ) )
+												child: Align( 
+													alignment: Alignment.topRight,
+													child: new Toggler( sel: 0, keys: [ "Olympic", "Pro" /*, "Custom" */ ] ) 
+												)
 											)
 										])
 								])

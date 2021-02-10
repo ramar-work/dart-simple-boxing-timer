@@ -1,6 +1,7 @@
 /* help.dart */
 import 'package:flutter/material.dart';
 import 'dart:math';
+import '../const.dart';
 
 
 //HelpPage menu
@@ -8,19 +9,22 @@ class HelpPage extends StatelessWidget {
 	
 	//All are multi-line paragraphs	
 	final String intro = """
-		Something about how this is the best boxing app in the universe.
+The ${ Const.name } helps you clock your boxing workouts.   
 	""";
 
 	final String olympic = """
-		Describe an Olympic workout.
+Olympic mode starts a timer that runs for three rounds at three minutes a piece.  
+The default break time between rounds is one minute.
 	""";
 
 	final String pro = """
-		Describe an Professional workout.
+Pro mode starts a timer that runs for twelve rounds at three minutes a piece.  
+The default break time between rounds is thirty seconds.
 	""";
 
 	final String custom = """
-		Describe how custom workouts work.
+	Finally, custom workouts can last as long as you wish and are configurable via
+	the Settings (display icon here) menu on the home screen.
 	""";
 
   @override
@@ -30,8 +34,7 @@ class HelpPage extends StatelessWidget {
 				child: Container(
 					padding: new EdgeInsets.all( 30.0 ),
 					child: Column( children: <Widget>[ 
-						Spacer( flex: 1 )
-
+					  Spacer( flex: 1 )
 					,	new Row( 
 						 children: <Widget>[
 								Align( 
@@ -65,6 +68,13 @@ class HelpPage extends StatelessWidget {
 
 					, Spacer( flex: 1 )
 
+					, Container( child: Column( children: [
+							Text( intro )
+						,	Text( olympic )
+						,	Text( pro )
+						] ) )
+
+					, Spacer( flex: 1 )
 					, new Row(
 							children: [
 								Spacer()
@@ -72,7 +82,7 @@ class HelpPage extends StatelessWidget {
 							, Spacer()
 							]) 
 
-					, Spacer( flex: 2 )
+					, Spacer( flex: 1 )
 					])
 				)
 			)
