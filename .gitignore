@@ -29,6 +29,7 @@
 .packages
 .pub-cache/
 .pub/
+flutdep
 /build/
 
 # Web related
@@ -48,3 +49,5 @@ TODO
 draft/
 content/
 trash/
+play-store/
+android/gradley

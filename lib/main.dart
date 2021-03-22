@@ -38,8 +38,8 @@ class BoxingTimeApp extends StatelessWidget {
 		//Should recall settings
 
 		List<Exercise> types = [
-		//Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
-		  Exercise( "Olympic", 180 * 1000, 10 * 1000, 60 * 1000, 3 )
+		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
+		, Exercise( "Olympic", 180 * 1000, 10 * 1000, 60 * 1000, 3 )
 		, Exercise( "Pro"    , 180 * 1000, 10 * 1000, 30 * 1000, 12 )
 		, Exercise( "Custom" , -1, -1, -1, -1 )
 		];
@@ -181,7 +181,7 @@ class _HomeState extends State<Home> {
 			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
 				_updateTime();
 				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( round.length - widget.exercise.warning ) ) ) {
-					//wbell.play();
+					bell.play( 'aeor.wav' );
 					_tswarnTriggered = true;
 				}
 				else if ( _elapsedMs >= round.length ) {
@@ -195,8 +195,8 @@ class _HomeState extends State<Home> {
 						round.text = ( rest ) ? "REST" : "ROUND ${round.current}";
 						round.length = ( rest ) ? widget.exercise.rest : widget.exercise.length; 	
 						mainColor = ( rest ) ? Styling.rest : Styling.active; 	
-						//mbell.play();
 						_tswarnTriggered = false;
+						bell.play( 'eor.wav' );
 					}
 				}
 				return t;
@@ -313,8 +313,6 @@ class _HomeState extends State<Home> {
 		round.text = "ROUND ${round.current}";
 		mainColor = Styling.active;
 		bell = new Audio( [ 'eor.wav', 'aeor.wav' ] );
-		//mbell = new Audio( 'wav/eor.wav' );
-		//wbell = new Audio( 'wav/aeor.wav' );
 	}
 
 
