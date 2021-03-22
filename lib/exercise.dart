@@ -22,7 +22,31 @@ class Exercise {
 		this.rounds
 	);
 
+	static String string ( Exercise e ) {
+		return """
+		 Typstring ${ e.typestring   }
+		 len ${ e.length   }
+		 rest ${ e.rest   }
+		 warning ${ e.warning   }
+		 rounds ${ e.rounds  }
+		""";
+	}
+
 	static void persist( Exercise e ) async {
+		if ( e.type == 0 ) {
+			e.length = 180;
+			e.rest = 60;
+			e.rounds = 3;
+		}
+		else if ( e.type == 1 ) {
+			e.length = 180;
+			e.rest = 30;
+			e.rounds = 12;
+		}
+		else {
+			; //custom
+		}
+
 		SharedPreferences p = await SharedPreferences.getInstance();
 		p.setString( "typestring", e.typestring );
 		p.setInt( "length", e.length );

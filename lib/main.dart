@@ -35,6 +35,8 @@ class BoxingTimeApp extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) {
 
+		//Should recall settings
+
 		List<Exercise> types = [
 		//Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
 		  Exercise( "Olympic", 180 * 1000, 10 * 1000, 60 * 1000, 3 )

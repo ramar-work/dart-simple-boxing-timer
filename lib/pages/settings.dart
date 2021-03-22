@@ -67,27 +67,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
 	Exercise _exercise; 
 
-	//Method that updates the exercise struct above 
-	void _u( String text, int value ) {
-		setState( () {
-			if ( text == "length" )
-				_exercise.length = value;	
-			else if ( text == "rest" )
-				_exercise.rest = value;	
-			else if ( text == "rounds" ) {
-				_exercise.rounds = value;	
-			}
-		} );	
-	}
-
 
 	//Update app settings
 	saveSettings() async  {
 		Navigator.pop( _ctx );
 		Exercise.persist( _exercise );
+		debugPrint( Exercise.string( _exercise ) );
 	}
 
-
+	
   @override
 	Widget build( BuildContext ctx ) {
 		_ctx = ctx;
@@ -150,6 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
 										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "Light", "Dark" ] ) ) )
 										])
 */
+									/*
 									 	TableRow( children: [ 
 											TableCell( child: Text( "" ) ), 
 											TableCell( child: Text( "" ) ) ] )
@@ -157,17 +146,28 @@ class _SettingsPageState extends State<SettingsPage> {
 											TableCell( child: Text( "Bell" ) )
 										, TableCell( child: Align( 
 												alignment: Alignment.topRight,
-												child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) 
+												child: new Toggler( 
+													sel: 0
+												, keys: [ "On", "Off" ]
+												, upd: (int i) {} 
+												)
 											) )
 										])
-									,	TableRow( children: [ 
+									*/
+									 	TableRow( children: [ 
 											TableCell( child: Text( "" ) ), 
 											TableCell( child: Text( "" ) ) ] )
 									,	TableRow( children: [
 											TableCell( child: Text( "10 Second Warning" ) )
 										, TableCell( child: Align( 
 												alignment: Alignment.topRight,
-												child: new Toggler( sel: 0, keys: [ "On", "Off" ] ) 
+												child: new Toggler(
+													sel: 0
+												, keys: [ "On", "Off" ]
+												, upd: (int i) { 
+														_exercise.warning = i;
+													}
+												)
 											) )
 										])
 									,	TableRow( children: [ 
@@ -178,7 +178,11 @@ class _SettingsPageState extends State<SettingsPage> {
 										, TableCell( 
 												child: Align( 
 													alignment: Alignment.topRight,
-													child: new Toggler( sel: 0, keys: [ "Olympic", "Pro" /*, "Custom" */ ] ) 
+													child: new Toggler(
+														sel: 0
+													, keys: [ "Olympic", "Pro" ]
+													, upd: (int i) { _exercise.type = i; }
+													)
 												)
 											)
 										])
@@ -187,7 +191,7 @@ class _SettingsPageState extends State<SettingsPage> {
 					)
 
 					, Spacer( flex: 2 )
-			
+
 					/*
 					, new Container( 
 							padding: new EdgeInsets.symmetric( vertical: 20.0 ),

@@ -1,8 +1,8 @@
 NAME=ibt
 MAC_REMOTE=mac
 WIN_REMOTE=win
-BUILD_DIR=~/prj/$(NAME)
-MAC_REMOTE_BIN=/usr/local/flutter/bin/flutter
+BUILD_DIR=~/prj/app/$(NAME)
+MAC_REMOTE_BIN=/opt/flutter/bin/flutter
 SCP=rsync -arz
 SSH=ssh
 FILELIST=./android ./assets ./ios ./lib ./test Makefile pubspec.lock pubspec.yaml

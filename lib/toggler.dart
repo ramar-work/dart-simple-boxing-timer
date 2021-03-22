@@ -31,12 +31,15 @@ class TogglerState extends State<Toggler> {
 		, borderRadius: BorderRadius.circular( 10 )
 		, textStyle: TextStyle( height: 1, fontSize: 10 )
 		, onPressed: ( int index ) {
+				widget.upd( index );
 				setState( () {
 					debugPrint( "TOGGLER-UPDATE: ${index}" );
 					debugPrint( "TOGGLER-UPDATE: ${tSelected.length}" );
 					for ( int bi = 0; bi < tSelected.length; bi++ ) {
 						tSelected[ bi ] = ( bi == index ) ? true : false;
 					}
+					widget.sel = index;
+					//}
 				} );
 			}
 		, isSelected: tSelected
@@ -50,8 +53,14 @@ class TogglerState extends State<Toggler> {
 class Toggler extends StatefulWidget {
 	List<String> keys;
 	int sel;
-
- 	Toggler({Key key, @required this.keys, this.sel }) : super(key: key);
+	Function upd;
+	
+ 	Toggler({
+		Key key
+	, @required this.keys
+	, @required this.upd
+	, @required this.sel 
+	}) : super(key: key);
 
 	@override
 	TogglerState createState() => TogglerState(); 
