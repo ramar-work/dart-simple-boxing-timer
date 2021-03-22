@@ -22,6 +22,15 @@ import 'pages/help.dart';
 
 const String app_title = "It's Boxing Time";
 
+
+class Agg {
+	int w;
+	String why;
+	Agg( this.w, this.why );	
+}
+
+
+
 //Track time seperately
 class Time {
 	int elapsed = 0;
@@ -76,68 +85,6 @@ class Clickable {
 
 
 
-void main() => runApp( BoxingTimeApp() );
-
-class BoxingTimeApp extends StatefulWidget {
-
-	BoxingTimeApp({Key key}) : super(key: key);
-
-	@override
-	_BoxingTimeAppState createState() => _BoxingTimeAppState();
-}
-
-
-class _BoxingTimeAppState extends State<BoxingTimeApp> {
-	List<Exercise> types = [
-		Exercise( "TEST"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 3 )
-	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
-	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
-	//, Exercise( "Custom" , -1, -1, -1, -1 )
-	];
-
-	//When (or if) this completes, use the returned exercise, otherwise go w/ a sensible default
-	Future<Exercise> loadExercise() async {
-		debugPrint( "Loading exercise..." );
-		Exercise e = await Exercise.recall();
-		return e;
-	}
-
-	@override
-	didUpdateWidget( Widget ow ) {
-		debugPrint( "update occurred." ); 
-	}
-	
-  @override
-  Widget build(BuildContext ctx) {
-		return FutureBuilder<Exercise>(
-			future: loadExercise()
-		, builder: ( BuildContext ctx, AsyncSnapshot<Exercise> snap ) {
-				Exercise ex;
-				if ( snap.hasData ) {
-					ex = snap.data;
-				}
-				else if ( snap.hasError ) {
-					debugPrint( "${snap.error}" );
-					ex = types[ 0 ];
-				}
-				else {
-					//Not there yet?
-					//Could use a different widget...
-					debugPrint( "Data not yet loaded." );
-					ex = types[ 1 ];
-				}
-				return MaterialApp(
-					title: app_title,
-					routes: {
-						"/": (ctx) => new Home( exercise: ex )
-					, "/help": (ctx) => new HelpPage()
-					, "/settings": (ctx) => new SettingsPage() 
-					}
-				);
-			}
-		);
-  }
-}
 
 			/*
       theme: ThemeData(
@@ -151,8 +98,9 @@ class _BoxingTimeAppState extends State<BoxingTimeApp> {
 //....
 class Home extends StatefulWidget {
 	Exercise exercise;
+	BuildContext ctx;
 
-  Home({Key key, @required this.exercise }) : super(key: key);
+  Home({Key key, @required this.exercise, @required this.ctx }) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -237,7 +185,8 @@ class _HomeState extends State<Home> {
 	//Stop the time
 	void _help() {
 		debugPrint( "HelpPage pressed!" );
-		Navigator.pushNamed( _ctx, "/help" );
+		//Navigator.pushNamed( _ctx, "/help" );
+		Navigator.pushNamed( widget.ctx, "help" );
 		//( _canceled = !_canceled ) ? 0 : _timer.cancel();
 	}
 
@@ -267,7 +216,7 @@ class _HomeState extends State<Home> {
 			tooltip: 'Increment',
 			child: Icon( Icons.settings ),
 			onPressed: () { 
-				Navigator.pushNamed( _ctx, '/settings' ); 
+				Navigator.pushNamed( widget.ctx, 'settings', arguments: Agg( 1, "two" ) ); 
 			},
 		);
 	}
@@ -347,7 +296,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext ctx) {
-		_ctx = ctx;
+		//_ctx = ctx;
+
+		//get and check?
+		final Agg args = ModalRoute.of( ctx ).settings.arguments;
+		debugPrint( "settings: arguments: ${ args.toString() } " );
 
 		//needs three rows
     return Scaffold(
@@ -390,5 +343,122 @@ class _HomeState extends State<Home> {
 			) ),
       floatingActionButton: settingsButton()
     );
+  }
+}
+
+
+void main() => runApp( BoxingTimeApp() );
+
+class BoxingTimeApp extends StatefulWidget {
+
+	BoxingTimeApp({Key key}) : super(key: key);
+
+	@override
+	_BoxingTimeAppState createState() => _BoxingTimeAppState();
+}
+
+
+class _BoxingTimeAppState extends State<BoxingTimeApp> 
+/*with NavigatorObserver */
+{
+	List<Exercise> types = [
+		Exercise( "TEST"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 3 )
+	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
+	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
+	//, Exercise( "Custom" , -1, -1, -1, -1 )
+	];
+
+	//final NavigatorObserver n = new NavigatorObserver();
+
+	Exercise t;
+	//When (or if) this completes, use the returned exercise, otherwise go w/ a sensible default
+	Future<Exercise> loadExercise() async {
+		debugPrint( "Loading exercise..." );
+		Exercise e = await Exercise.recall();
+		setState( () { t = e; } ); 
+		return e;
+	}
+
+	/*
+	@override
+	didUpdateWidget( Widget ow ) {
+		debugPrint( "update occurred." ); 
+	}
+
+	@override
+	didChangeDependencies() {
+		debugPrint( "did change occurred." ); 
+	}
+	*/
+
+	@override
+	initState() {
+		debugPrint( "Init state and create navigator" );
+	}
+
+	/*
+	@override 
+	didPop( Route r, Route pr ) { debugPrint( "didPop called..." ); }	
+	@override
+	didPush( Route r, Route pr ) { debugPrint( 'didPush called.' ); }
+	@override
+	didRemove( Route r, Route pr ) { debugPrint( 'didRemove called.' ); }
+	//@override
+	//didReplace( { Route nr, Route pr } ) { debugPrint( 'didReplace called.' ); }
+	@override
+	didStartUserGesture( Route r, Route pr ) { debugPrint( 'didStartUserGesture called.' ); }
+	@override
+	didStopUserGesture() { debugPrint( 'didStopUserGesture called.' ); }
+	*/
+
+	Route<dynamic> genRoute ( RouteSettings settings ) {
+		debugPrint( "navved to ${ settings.name }" );
+	}
+	
+  @override
+  Widget build(BuildContext ctx) {
+		Exercise ex = types[ 0 ];
+
+		return MaterialApp(
+			title: app_title,
+			//navigatorObservers: [ n ],
+			onGenerateRoute: genRoute,
+			routes: {
+				"/": ( _ctx ) => new Home( exercise: ex, ctx: _ctx )
+			, "help": (ctx) => new HelpPage()
+			, "settings": (ctx) => new SettingsPage() 
+			}
+		);
+		/*
+		return FutureBuilder<Exercise>(
+			future: Exercise.recall()
+		, builder: ( BuildContext ctx, AsyncSnapshot<Exercise> snap ) {
+				Exercise ex;
+				if ( snap.hasData ) {
+					debugPrint( "Data has been re-loaded." );
+					ex = snap.data;
+					debugPrint( "${ex.typestring}" );
+				}
+				else if ( snap.hasError ) {
+					debugPrint( "${snap.error}" );
+					ex = types[ 0 ];
+				}
+				else {
+					//Not there yet?
+					//Could use a different widget...
+					debugPrint( "Data not yet loaded." );
+					ex = types[ 0 ];
+				}
+				return MaterialApp(
+					title: app_title,
+					routes: {
+						"/": (ctx) => new Home( exercise: ex )
+					, "/help": (ctx) => new HelpPage()
+					, "/settings": (ctx) => new SettingsPage() 
+					}
+				);
+			}
+		);
+		*/
   }
 }

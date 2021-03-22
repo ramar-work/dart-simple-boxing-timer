@@ -60,7 +60,7 @@ class Exercise {
 	}
 
 	static Future<Exercise> recall() async {
-		Exercise e = new Exercise( "", 0, 0, 0, 0 );
+		Exercise e = new Exercise( "boo", 0, 0, 0, 0 );
 		SharedPreferences p = await SharedPreferences.getInstance();
 		e.typestring = p.getString( "typestring" );
 		e.length = p.getInt( "length" );

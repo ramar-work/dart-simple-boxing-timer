@@ -70,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
 	//Update app settings
 	saveSettings() async  {
-		Navigator.pop( _ctx );
+		Navigator.pop( _ctx, 'yes' );
 		Exercise.persist( _exercise );
 		debugPrint( "Saving exercise..." );
 		debugPrint( Exercise.string( _exercise ) );
