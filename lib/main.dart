@@ -36,11 +36,10 @@ class BoxingTimeApp extends StatelessWidget {
   Widget build(BuildContext ctx) {
 
 		//Should recall settings
-
 		List<Exercise> types = [
 		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
-		, Exercise( "Olympic", 180 * 1000, 10 * 1000, 60 * 1000, 3 )
-		, Exercise( "Pro"    , 180 * 1000, 10 * 1000, 30 * 1000, 12 )
+		, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
+		, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
 		, Exercise( "Custom" , -1, -1, -1, -1 )
 		];
 
@@ -69,12 +68,10 @@ class Time {
 	int min = 0;
 	int msecs = 0;
 	int secs = 0;
-
 	bool r_canceled = false;
 	bool r_rest = false;
 	bool r_triggered = false;
 	bool w_triggered = false;
-
 	Time();
 }
 
