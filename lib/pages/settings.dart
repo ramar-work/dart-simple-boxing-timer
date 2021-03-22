@@ -72,6 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
 	saveSettings() async  {
 		Navigator.pop( _ctx );
 		Exercise.persist( _exercise );
+		debugPrint( "Saving exercise..." );
 		debugPrint( Exercise.string( _exercise ) );
 	}
 

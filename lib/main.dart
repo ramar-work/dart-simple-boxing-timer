@@ -22,46 +22,6 @@ import 'pages/help.dart';
 
 const String app_title = "It's Boxing Time";
 
-
-void main() => runApp( BoxingTimeApp() );
-
-
-class BoxingTimeApp extends StatelessWidget {
-
-	Exercise loadCustomExercise() {
-		return null;
-	}
-	
-  @override
-  Widget build(BuildContext ctx) {
-
-		//Should recall settings
-		List<Exercise> types = [
-		  Exercise( "TEST", 10 * 1000, 3 * 1000, 3 * 1000, 3 )
-		, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
-		, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
-		, Exercise( "Custom" , -1, -1, -1, -1 )
-		];
-
-    return MaterialApp(
-      title: app_title,
-			/*
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-			*/
-			routes: {
-				"/": (ctx) => new Home( exercise: types[0] )
-			, "/help": (ctx) => new HelpPage() 
-			, "/settings": (ctx) => new SettingsPage() 
-			}
-    );
-  }
-}
-
-
-
-
 //Track time seperately
 class Time {
 	int elapsed = 0;
@@ -113,6 +73,78 @@ class Clickable {
 
 	Clickable( this.ctx, this.text );
 }
+
+
+
+void main() => runApp( BoxingTimeApp() );
+
+class BoxingTimeApp extends StatefulWidget {
+
+	BoxingTimeApp({Key key}) : super(key: key);
+
+	@override
+	_BoxingTimeAppState createState() => _BoxingTimeAppState();
+}
+
+
+class _BoxingTimeAppState extends State<BoxingTimeApp> {
+	List<Exercise> types = [
+		Exercise( "TEST"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 3 )
+	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
+	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
+	//, Exercise( "Custom" , -1, -1, -1, -1 )
+	];
+
+	//When (or if) this completes, use the returned exercise, otherwise go w/ a sensible default
+	Future<Exercise> loadExercise() async {
+		debugPrint( "Loading exercise..." );
+		Exercise e = await Exercise.recall();
+		return e;
+	}
+
+	@override
+	didUpdateWidget( Widget ow ) {
+		debugPrint( "update occurred." ); 
+	}
+	
+  @override
+  Widget build(BuildContext ctx) {
+		return FutureBuilder<Exercise>(
+			future: loadExercise()
+		, builder: ( BuildContext ctx, AsyncSnapshot<Exercise> snap ) {
+				Exercise ex;
+				if ( snap.hasData ) {
+					ex = snap.data;
+				}
+				else if ( snap.hasError ) {
+					debugPrint( "${snap.error}" );
+					ex = types[ 0 ];
+				}
+				else {
+					//Not there yet?
+					//Could use a different widget...
+					debugPrint( "Data not yet loaded." );
+					ex = types[ 1 ];
+				}
+				return MaterialApp(
+					title: app_title,
+					routes: {
+						"/": (ctx) => new Home( exercise: ex )
+					, "/help": (ctx) => new HelpPage()
+					, "/settings": (ctx) => new SettingsPage() 
+					}
+				);
+			}
+		);
+  }
+}
+
+			/*
+      theme: ThemeData(
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+			*/
+
 
 
 

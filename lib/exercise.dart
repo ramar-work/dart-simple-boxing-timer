@@ -24,7 +24,7 @@ class Exercise {
 
 	static String string ( Exercise e ) {
 		return """
-		 Typstring ${ e.typestring   }
+		 Typestring ${ e.typestring   }
 		 len ${ e.length   }
 		 rest ${ e.rest   }
 		 warning ${ e.warning   }
@@ -55,7 +55,11 @@ class Exercise {
 		p.setInt( "rounds", e.rounds );
 	}
 
-	static void recall() async {
+	static bool check () {
+		return false;
+	}
+
+	static Future<Exercise> recall() async {
 		Exercise e = new Exercise( "", 0, 0, 0, 0 );
 		SharedPreferences p = await SharedPreferences.getInstance();
 		e.typestring = p.getString( "typestring" );
@@ -63,6 +67,7 @@ class Exercise {
 		e.rest = p.getInt( "rest" );
 		e.warning = p.getInt( "warning" );
 		e.rounds = p.getInt( "rounds" );
+		return e;
 	}
 }
 
