@@ -14,6 +14,18 @@ class Exercise {
 	int rounds;
 	int avg;
 
+	static List<Exercise> types = [
+/*
+		Exercise( "TEST"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 3 )
+	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
+	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
+*/
+		Exercise( "Kirk"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 4 )
+	, Exercise( "Spock"  , 20 * 1000 , 6 * 1000 , 3 * 1000 , 2 )
+	, Exercise( "Mccoy"  , 15 * 1000 , 9 * 1000 , 3 * 1000 , 3 )
+//, Exercise( "Custom" , -1, -1, -1, -1 )
+	];
+
 	Exercise( 
 		this.typestring, 
 		this.length, 
@@ -24,7 +36,7 @@ class Exercise {
 
 	static String string ( Exercise e ) {
 		return """
-		 Typestring ${ e.typestring   }
+		 Typestring ${ e.typestring }
 		 len ${ e.length   }
 		 rest ${ e.rest   }
 		 warning ${ e.warning   }
@@ -32,19 +44,15 @@ class Exercise {
 		""";
 	}
 
-	static void persist( Exercise e ) async {
-		if ( e.type == 0 ) {
-			e.length = 180;
-			e.rest = 60;
-			e.rounds = 3;
-		}
-		else if ( e.type == 1 ) {
-			e.length = 180;
-			e.rest = 30;
-			e.rounds = 12;
-		}
+	static Future<Exercise> persist( Exercise e ) async {
+		if ( e.type == 0 )
+			return types[ 1 ];
+		else if ( e.type == 1 )
+			return types[ 2 ];	
+		else if ( e.type == 2 ) //custom
+			return types[ 1 ];
 		else {
-			; //custom
+			return types[ 1 ];
 		}
 
 		SharedPreferences p = await SharedPreferences.getInstance();
@@ -53,6 +61,7 @@ class Exercise {
 		p.setInt( "rest", e.rest );
 		p.setInt( "warning", e.warning );
 		p.setInt( "rounds", e.rounds );
+		return e;
 	}
 
 	static bool check () {
@@ -60,7 +69,7 @@ class Exercise {
 	}
 
 	static Future<Exercise> recall() async {
-		Exercise e = new Exercise( "boo", 0, 0, 0, 0 );
+		Exercise e = types[ 1 ];
 		SharedPreferences p = await SharedPreferences.getInstance();
 		e.typestring = p.getString( "typestring" );
 		e.length = p.getInt( "length" );

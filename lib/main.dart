@@ -85,22 +85,9 @@ class Clickable {
 
 
 
-
-			/*
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-			*/
-
-
-
-
 //....
 class Home extends StatefulWidget {
-	Exercise exercise;
-	BuildContext ctx;
-
-  Home({Key key, @required this.exercise, @required this.ctx }) : super(key: key);
+  Home({ Key key }) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -115,6 +102,8 @@ class _HomeState extends State<Home> {
 	final double _elevation = 3;
 	final int    _resolution = 50;
 	final double _xButtonSize = 60;
+	int exnum = 0;
+	Exercise ex;
 
 	//Private accessible fields
 	BuildContext _ctx;
@@ -157,20 +146,20 @@ class _HomeState extends State<Home> {
 
 			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
 				_updateTime();
-				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( round.length - widget.exercise.warning ) ) ) {
+				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( round.length - ex.warning ) ) ) {
 					bell.play( 'aeor.wav' );
 					_tswarnTriggered = true;
 				}
 				else if ( _elapsedMs >= round.length ) {
 					round.current += ( rest = !rest ) ? 0 : 1;
-					if ( !rest && ( round.current == ( widget.exercise.rounds + 1 ) ) ) {
+					if ( !rest && ( round.current == ( ex.rounds + 1 ) ) ) {
 						debugPrint( "@ end of workout." );
 						_timer.cancel();
 					}
 					else {
 						_elapsedMs = 0;
 						round.text = ( rest ) ? "REST" : "ROUND ${round.current}";
-						round.length = ( rest ) ? widget.exercise.rest : widget.exercise.length; 	
+						round.length = ( rest ) ? ex.rest : ex.length; 	
 						mainColor = ( rest ) ? Styling.rest : Styling.active; 	
 						_tswarnTriggered = false;
 						bell.play( 'eor.wav' );
@@ -185,9 +174,7 @@ class _HomeState extends State<Home> {
 	//Stop the time
 	void _help() {
 		debugPrint( "HelpPage pressed!" );
-		//Navigator.pushNamed( _ctx, "/help" );
-		Navigator.pushNamed( widget.ctx, "help" );
-		//( _canceled = !_canceled ) ? 0 : _timer.cancel();
+		Navigator.pushNamed( _ctx, "help" );
 	}
 
 
@@ -215,8 +202,15 @@ class _HomeState extends State<Home> {
 		return new FloatingActionButton(
 			tooltip: 'Increment',
 			child: Icon( Icons.settings ),
-			onPressed: () { 
-				Navigator.pushNamed( widget.ctx, 'settings', arguments: Agg( 1, "two" ) ); 
+			onPressed: () async { 
+				var r = await Navigator.pushNamed( _ctx, 'settings' );
+				setState( () {
+					ex = r;
+					round = Round( 1, ex.length );
+					round.text = "ROUND ${round.current}";
+					debugPrint( "Exe recvd: ${ ex } " );
+					debugPrint( "Type is : ${ ex.typestring } " );
+				} );
 			},
 		);
 	}
@@ -271,6 +265,8 @@ class _HomeState extends State<Home> {
 			_secs = 0;
 			_min = 0;
 			_msecs = 0;
+			round = Round( 1, ex.length );
+			round.text = "ROUND ${round.current}";
 			mainColor = Styling.active; 	
     });
 	}
@@ -287,22 +283,16 @@ class _HomeState extends State<Home> {
 
 	@override
 	initState() {
-		round = Round( 1, widget.exercise.length );
+		ex = Exercise.recall();
+		round = Round( 1, ex.length );
 		round.text = "ROUND ${round.current}";
 		mainColor = Styling.active;
 		bell = new Audio( [ 'eor.wav', 'aeor.wav' ] );
 	}
 
-
   @override
   Widget build(BuildContext ctx) {
-		//_ctx = ctx;
-
-		//get and check?
-		final Agg args = ModalRoute.of( ctx ).settings.arguments;
-		debugPrint( "settings: arguments: ${ args.toString() } " );
-
-		//needs three rows
+		_ctx = ctx;
     return Scaffold(
       body: Center( child: Column(
 				crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -318,7 +308,7 @@ class _HomeState extends State<Home> {
 						children: [
 						  Spacer()
 						, Center( child: Text(
-								widget.exercise.typestring,
+								ex.typestring,
 								textScaleFactor: 1.5, 
 								style: TextStyle( fontStyle: FontStyle.italic )
 							))
@@ -358,107 +348,21 @@ class BoxingTimeApp extends StatefulWidget {
 }
 
 
-class _BoxingTimeAppState extends State<BoxingTimeApp> 
-/*with NavigatorObserver */
-{
-	List<Exercise> types = [
-		Exercise( "TEST"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 3 )
-	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
-	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
-	//, Exercise( "Custom" , -1, -1, -1, -1 )
-	];
-
-	//final NavigatorObserver n = new NavigatorObserver();
-
-	Exercise t;
-	//When (or if) this completes, use the returned exercise, otherwise go w/ a sensible default
-	Future<Exercise> loadExercise() async {
-		debugPrint( "Loading exercise..." );
-		Exercise e = await Exercise.recall();
-		setState( () { t = e; } ); 
-		return e;
-	}
-
-	/*
-	@override
-	didUpdateWidget( Widget ow ) {
-		debugPrint( "update occurred." ); 
-	}
-
-	@override
-	didChangeDependencies() {
-		debugPrint( "did change occurred." ); 
-	}
-	*/
-
+class _BoxingTimeAppState extends State<BoxingTimeApp> {
 	@override
 	initState() {
 		debugPrint( "Init state and create navigator" );
 	}
 
-	/*
-	@override 
-	didPop( Route r, Route pr ) { debugPrint( "didPop called..." ); }	
-	@override
-	didPush( Route r, Route pr ) { debugPrint( 'didPush called.' ); }
-	@override
-	didRemove( Route r, Route pr ) { debugPrint( 'didRemove called.' ); }
-	//@override
-	//didReplace( { Route nr, Route pr } ) { debugPrint( 'didReplace called.' ); }
-	@override
-	didStartUserGesture( Route r, Route pr ) { debugPrint( 'didStartUserGesture called.' ); }
-	@override
-	didStopUserGesture() { debugPrint( 'didStopUserGesture called.' ); }
-	*/
-
-	Route<dynamic> genRoute ( RouteSettings settings ) {
-		debugPrint( "navved to ${ settings.name }" );
-	}
-	
   @override
   Widget build(BuildContext ctx) {
-		Exercise ex = types[ 0 ];
-
 		return MaterialApp(
 			title: app_title,
-			//navigatorObservers: [ n ],
-			onGenerateRoute: genRoute,
 			routes: {
-				"/": ( _ctx ) => new Home( exercise: ex, ctx: _ctx )
+				"/": ( _ctx ) => new Home()
 			, "help": (ctx) => new HelpPage()
 			, "settings": (ctx) => new SettingsPage() 
 			}
 		);
-		/*
-		return FutureBuilder<Exercise>(
-			future: Exercise.recall()
-		, builder: ( BuildContext ctx, AsyncSnapshot<Exercise> snap ) {
-				Exercise ex;
-				if ( snap.hasData ) {
-					debugPrint( "Data has been re-loaded." );
-					ex = snap.data;
-					debugPrint( "${ex.typestring}" );
-				}
-				else if ( snap.hasError ) {
-					debugPrint( "${snap.error}" );
-					ex = types[ 0 ];
-				}
-				else {
-					//Not there yet?
-					//Could use a different widget...
-					debugPrint( "Data not yet loaded." );
-					ex = types[ 0 ];
-				}
-				return MaterialApp(
-					title: app_title,
-					routes: {
-						"/": (ctx) => new Home( exercise: ex )
-					, "/help": (ctx) => new HelpPage()
-					, "/settings": (ctx) => new SettingsPage() 
-					}
-				);
-			}
-		);
-		*/
   }
 }

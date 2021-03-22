@@ -67,11 +67,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
 	Exercise _exercise; 
 
-
 	//Update app settings
 	saveSettings() async  {
-		Navigator.pop( _ctx, 'yes' );
-		Exercise.persist( _exercise );
+		_exercise = await Exercise.persist( _exercise );
+		Navigator.pop( _ctx, _exercise ); 
 		debugPrint( "Saving exercise..." );
 		debugPrint( Exercise.string( _exercise ) );
 	}
