@@ -51,3 +51,6 @@ content/
 trash/
 play-store/
 android/gradley
+pubspec.lock
+assets/img/
+screenshots/
