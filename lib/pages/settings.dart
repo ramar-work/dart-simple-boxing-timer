@@ -4,6 +4,10 @@ import '../toggler.dart';
 import '../input.dart';
 import '../exercise.dart';
 import 'dart:math';
+import 'package:sprintf/sprintf.dart';
+
+
+Exercise _g;
 
 
 class ExerciseInput extends StatefulWidget {
@@ -55,6 +59,157 @@ class ExerciseInputState extends State<ExerciseInput> {
 }
 
 
+TableRow tSpacer() {
+	return TableRow( children: [ 
+		TableCell( child: Text( "" ) ), 
+		TableCell( child: Text( "" ) ) ] 
+	);
+}
+
+
+
+
+class _CustomSettingsWidget extends StatefulWidget {
+
+	//Get this elsewhere 
+	Exercise custom, ce = null;
+
+	_CustomSettingsWidget( { Key key, this.custom } ) : super( key : key );
+	
+	@override
+  _CustomSettingsWidgetState createState() => _CustomSettingsWidgetState();
+
+}
+
+
+class _CustomSettingsWidgetState extends State<_CustomSettingsWidget> {
+
+	//Initialize the custom exercise set here
+	@override
+	initState() {
+		_g.typestring = "Custom";
+	}
+
+	@override	
+	Widget build( BuildContext ctx ) {
+		return Container( 
+			padding: new EdgeInsets.symmetric( vertical: 20.0 ),
+			child: Column( children: [
+				new Row( children: <Widget>[ 
+					Text( "Custom Timer Settings"
+					, textScaleFactor: 2.0
+					, style: TextStyle( fontWeight: FontWeight.bold  ) )  
+					])
+
+			, Table(
+					defaultVerticalAlignment: TableCellVerticalAlignment.middle
+				, children: [
+						TableRow( children: [
+							TableCell( child: Text( "Round Length" ) )
+						, TableCell( child: 
+								Row( 
+									mainAxisAlignment: MainAxisAlignment.end
+								,	children: [ 
+										Text( 
+											"${sprintf( '%01i',[ _g.length ~/ 1000 ~/ 60 ] )}"
+											":${sprintf( '%02i',[ _g.length ~/ 1000 % 60 ])}", 
+											textScaleFactor: 1.5 
+										)
+									,	Column( children: [
+											new MaterialButton( 
+												child: Icon( Icons.arrow_circle_up, size: 30 )
+											, onPressed: () => setState( () => _g.length += 1000 )
+											)
+										, new MaterialButton( 
+												child: Icon( Icons.arrow_circle_down, size: 30 )
+											, onPressed: () => setState( () => _g.length -= 1000 )
+											)
+										])
+									]
+								)
+							)
+						])
+					
+					, tSpacer()
+					,	TableRow( children: [
+							TableCell( child: Text( "Round Count" ) )
+						, TableCell( 
+										child: Row( 
+											mainAxisAlignment: MainAxisAlignment.end
+										,	children: [ 
+											Text( "${_g.rounds > 0 ? _g.rounds : 'Inf' }", textScaleFactor: 1.5 )
+										,	Column( children: [
+												new MaterialButton( 
+													child: Icon( Icons.arrow_circle_up, size: 30 )
+												, onPressed: () { setState( () => _g.rounds ++ ); } 
+												)
+											, new MaterialButton( 
+													child: Icon( Icons.arrow_circle_down, size: 30 )
+												,	onPressed: () => setState( () {	
+														_g.rounds = (_g.rounds == 0) ? 0 : _g.rounds - 1;
+													} )
+												)
+										])
+									])
+								)
+							])
+
+					, tSpacer()
+					,	TableRow( children: [
+							TableCell( child: Text( "Rest Interval" ) )
+						, TableCell( child: 
+								Row( 
+									mainAxisAlignment: MainAxisAlignment.end
+								,	children: [ 
+											Text( "${_g.rest ~/ 1000}s", textScaleFactor: 1.5 )
+										,	Column( children: [
+												new MaterialButton( 
+													child: Icon( Icons.arrow_circle_up, size: 30 )
+												, height: 2 
+												,	onPressed: () { setState( () => _g.rest += 1000 ); } 
+												)
+											, new MaterialButton( 
+													child: Icon( Icons.arrow_circle_down, size: 30 )
+												, height: 2
+												,	onPressed: () { setState( () => _g.rest -= 1000 ); } 
+												)
+										])
+									]
+								))
+						])
+
+					, tSpacer()
+					,	TableRow( children: [
+							TableCell( child: Text( "Warning Length" ) )
+						, TableCell( child: 
+								Row(
+									mainAxisAlignment: MainAxisAlignment.end	
+								,	children: [	
+										Text( "${_g.warning ~/ 1000}s", textScaleFactor: 1.5 )
+									,	Column( children: [
+											new MaterialButton( 
+												child: Icon( Icons.arrow_circle_up, size: 30 )
+											, height: 2 
+											,	onPressed: () { setState( () => _g.warning += 1000 ); } 
+											)
+										, new MaterialButton( 
+												child: Icon( Icons.arrow_circle_down, size: 30 )
+											, height: 2
+											,	onPressed: () { setState( () => _g.warning -= 1000 ); } 
+											)
+									])
+								]
+							)
+						)
+					])
+					])
+				]));
+	}	
+}
+
+
+
+
 class SettingsPage extends StatefulWidget {
 
  	SettingsPage({Key key}) : super(key: key);
@@ -69,33 +224,33 @@ class _SettingsPageState extends State<SettingsPage> {
 
 	BuildContext _ctx;
 
-	Exercise _exercise; 
+	bool custom = false; 
+
+	_CustomSettingsWidget ce = null;
 
 	//Update app settings
 	saveSettings() async  {
-		_exercise = await Exercise.persist( _exercise );
-		Navigator.pop( _ctx, _exercise ); 
+		Exercise e = await Exercise.persist( _g );
+		Navigator.pop( _ctx, e ); 
 		debugPrint( "Saving exercise..." );
-		debugPrint( Exercise.string( _exercise ) );
+		debugPrint( Exercise.string( e ) );
 	}
 
-
-	//Generate a TableRow for spacer
-	TableRow tSpacer() {
-		return TableRow( children: [ 
-			TableCell( child: Text( "" ) ), 
-			TableCell( child: Text( "" ) ) ] 
-		);
+	//sigh...
+	void boing( int i ) {
+		setState( () => custom = ( i == 2 ) ? true : false );
 	}
 
-	
+	@override
+	initState() {
+		//TODO: check for a record in sharedprefs first, then recall
+		_g = new Exercise( "", 0, 0, 0, 0 );
+	}
+
   @override
 	Widget build( BuildContext ctx ) {
 		_ctx = ctx;
-		//TODO: check for a record first, then recall
-		//exercise = Exercise.check() ? Exercise.recall( e ) : ;
-		_exercise = new Exercise( "", 0, 0, 0, 0 );
-
+		//widget.ex = _exercise;
 		return Scaffold( 
 			body: Center( 
 				child: Container(
@@ -118,7 +273,7 @@ class _SettingsPageState extends State<SettingsPage> {
 									alignment: Alignment.topRight
 								,	child: new MaterialButton( 
 										child: Transform.rotate( 
-											angle: 180 * pi/180,
+											angle: 180 * pi / 180,
 											child: Icon( Icons.arrow_right_alt, color: Colors.grey, size: 40 )
 										)
 									, color: Colors.grey[50]
@@ -139,12 +294,14 @@ class _SettingsPageState extends State<SettingsPage> {
 								new Row( children: <Widget>[ 
 									Text( "General",
 										textScaleFactor: 2.0,
-										style: TextStyle( fontWeight: FontWeight.bold  ) ) 
+										style: TextStyle( fontWeight: FontWeight.bold )
+									)
 								])
 
 							, Table(
 								  defaultVerticalAlignment: TableCellVerticalAlignment.middle
 								,	children: [
+										/*
 										TableRow( children: [
 											TableCell( child: Text( "Theme" ) )
 										, TableCell( child: Align( 
@@ -158,32 +315,18 @@ class _SettingsPageState extends State<SettingsPage> {
 												)
 											) )
 										])
-									/*
-									 	TableRow( children: [ 
-											TableCell( child: Text( "" ) ), 
-											TableCell( child: Text( "" ) ) ] )
-									,	TableRow( children: [
-											TableCell( child: Text( "Bell" ) )
-										, TableCell( child: Align( 
-												alignment: Alignment.topRight,
-												child: new Toggler( 
-													sel: 0
-												, keys: [ "On", "Off" ]
-												, upd: (int i) {} 
-												)
-											) )
-										])
-									*/
-									, tSpacer()
-									,	TableRow( children: [
-											TableCell( child: Text( "10 Second Warning" ) )
+										*/
+
+									 	TableRow( children: [
+											TableCell( child: Text( "Play Warning" ) )
 										, TableCell( child: Align( 
 												alignment: Alignment.topRight,
 												child: new Toggler(
 													sel: 0
 												, keys: [ "On", "Off" ]
 												, upd: (int i) { 
-														_exercise.warning = i;
+														//wow...
+														_g.willWarn = i == 0 ? 1 : 0;
 													}
 												)
 											) )
@@ -198,111 +341,20 @@ class _SettingsPageState extends State<SettingsPage> {
 													child: new Toggler(
 														sel: 0
 													, keys: [ "Olympic", "Pro", "Custom" ]
-													, upd: (int i) { _exercise.type = i; }
+													, upd: (int i) { 
+															_g.type = i; 
+															boing( i );
+														}
 													)
 												)
 											)
 										])
 								])
 							])
-					)
-
-					, Spacer( flex: 2 )
-
-					/*
-					, new Container( 
-							padding: new EdgeInsets.symmetric( vertical: 20.0 ),
-							child: Column( children: [
-								new Row( children: <Widget>[ 
-									Text( "Custom Timer"
-									, textScaleFactor: 2.0
-									, style: TextStyle( fontWeight: FontWeight.bold  ) )  
-									])
-
-							, Table(
-								  defaultVerticalAlignment: TableCellVerticalAlignment.middle
-								, children: [
-										TableRow( children: [
-											TableCell( child: Text( "Round Length" ) )
-										, TableCell( child: 
-												Row( 
-													mainAxisAlignment: MainAxisAlignment.end
-												,	children: [ 
-														Text( "0", textScaleFactor: 1.5 )
-													,	Column( children: [
-															new MaterialButton( 
-																child: Icon( Icons.arrow_circle_up, size: 30 )
-															, onPressed: () {} 
-															)
-														, new MaterialButton( 
-																child: Icon( Icons.arrow_circle_down, size: 30 )
-															, onPressed: () {} 
-															)
-														])
-													]
-												)
-											)
-										])
-
-									,	TableRow( children: [ 
-											TableCell( child: Text( "" ) ), 
-											TableCell( child: Text( "" ) ) ] )
-
-									,	TableRow( children: [
-											TableCell( child: Text( "Round Count" ) )
-										, TableCell( 
-														child: Row( 
-															mainAxisAlignment: MainAxisAlignment.end
-														,	children: [ 
-															Text( "0", textScaleFactor: 1.5 )
-														,	Column( children: [
-																new MaterialButton( 
-																	child: Icon( Icons.arrow_circle_up, size: 30 )
-																, onPressed: () {} 
-																)
-															, new MaterialButton( 
-																	child: Icon( Icons.arrow_circle_down, size: 30 )
-																, onPressed: () {} 
-																)
-														])
-													])
-												)
-											])
-
-									,	TableRow( children: [ 
-											TableCell( child: Text( "" ) ), 
-											TableCell( child: Text( "" ) ) ] )
-
-									,	TableRow( children: [
-											TableCell( child: Text( "Rest Interval" ) )
-										, TableCell( child: 
-												Row( 
-													mainAxisAlignment: MainAxisAlignment.end
-												,	children: [ 
-															Text( "0", textScaleFactor: 1.5 )
-														,	Column( children: [
-																new MaterialButton( 
-																	child: Icon( Icons.arrow_circle_up, size: 30 )
-																, height: 2 
-																, onPressed: () {} 
-																)
-															, new MaterialButton( 
-																	child: Icon( Icons.arrow_circle_down, size: 30 )
-																, height: 2
-																, onPressed: () {} 
-																)
-														])
-													]
-												)
-											)
-										])
-									]
-								)
-							])
 						)
-					*/
-					]
-			))) 
-		);
+					, Spacer( flex: 2 )
+					, ( !custom ) ? 
+							Spacer( flex: 1 ) : _CustomSettingsWidget()
+				]))));
 	}
 }

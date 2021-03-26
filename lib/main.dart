@@ -124,7 +124,6 @@ class _HomeState extends State<Home> {
 	//NOTE: All of this is set later
 	Round round;
 
-	
 	//Update the time
   void _updateTime() {
 		setState( () {
@@ -207,6 +206,7 @@ class _HomeState extends State<Home> {
 				var r = await Navigator.pushNamed( _ctx, 'settings' );
 				setState( () {
 					ex = r;
+					_reset();
 					round = Round( 1, ex.length );
 					round.text = "ROUND ${round.current}";
 					debugPrint( "Exe recvd: ${ ex } " );

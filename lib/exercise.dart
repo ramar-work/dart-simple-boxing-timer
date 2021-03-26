@@ -12,7 +12,13 @@ class Exercise {
 	int rest;
 	int warning;
 	int rounds;
-	int avg;
+	int willWarn = 1;
+	//int countIn = 0;
+
+	static final int lengthMax = ( 180 * 3 ) * 1000;
+	static final int roundsMax = 20;
+	//static final int countInMin = 0, countInMax = 30;
+	//static bool willCountIn = false;
 
 	static List<Exercise> types = [
 		Exercise( "TEST"   , 10 * 1000, 3 * 1000, 3 * 1000, 3 )
@@ -42,16 +48,23 @@ class Exercise {
 	}
 
 	static Future<Exercise> persist( Exercise e ) async {
+		SharedPreferences p = await SharedPreferences.getInstance();
+		p.setInt( "type", e.type );
+
 		if ( e.type == 0 )
 			return types[ 1 ];
 		else if ( e.type == 1 )
 			return types[ 2 ];	
 		else { //custom or errors...
 			//double check user settings and make sure they make sense
-			return types[ 1 ];
+			//Exercise f = new Exercise( "Custom", 0, 0, 0, 0 );s
+			if ( e.length > lengthMax ) 
+				e.length = lengthMax;
+			if ( e.rounds > roundsMax )
+				e.rounds = roundsMax;
+			
 		}
 
-		SharedPreferences p = await SharedPreferences.getInstance();
 		p.setString( "typestring", e.typestring );
 		p.setInt( "length", e.length );
 		p.setInt( "rest", e.rest );
