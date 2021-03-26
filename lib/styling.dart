@@ -3,10 +3,22 @@ import 'package:flutter/material.dart';
 
 /*this isn't really a widget, it's just data... */
 class Styling {
+	//These really shouldn't change...
 	static final Color help = Colors.yellow;
-	static final Color active = Colors.teal[100];
 	static final Color reset = Colors.indigo;
-	static final Color rest = Colors.red[800];
 	static final Color settings = Colors.blueGrey[200];
-	static final Color warn = Colors.orange;
+
+	//
+	String bgImage; // "assets/img/bg-top-white.png"; 
+	Color rest; // Colors.red[800];
+	Color active; // Colors.grey[100];
+	Color warn; // Colors.orange;
+
+	//Initialize the changeable elements
+	Styling(
+		this.bgImage
+	, this.rest
+	, this.active	
+	, this.warn
+	);
 }

@@ -1,10 +1,11 @@
 /**
-main.dart
----------
-
-TODO
-
-*/
+ * main.dart
+ * ---------
+ * 
+ * TODO
+ * ====
+ * 
+**/
 import 'package:flutter/material.dart';
 import 'package:sprintf/sprintf.dart';
 import 'dart:async';
@@ -21,14 +22,6 @@ import 'pages/help.dart';
 
 
 const String app_title = "It's Boxing Time";
-
-
-class Agg {
-	int w;
-	String why;
-	Agg( this.w, this.why );	
-}
-
 
 
 //Track time seperately
@@ -84,6 +77,15 @@ class Clickable {
 }
 
 
+//Define styles here...
+final Styling lightstyle = Styling(
+	"assets/img/bg-top-white.png",
+	Colors.red[800],
+	Colors.grey[100],
+	Colors.orange
+);
+
+
 
 //....
 class Home extends StatefulWidget {
@@ -100,8 +102,9 @@ class _HomeState extends State<Home> {
 	
 	//Private configuration that will most likely never change
 	final double _elevation = 3;
-	final int    _resolution = 50;
+	final int    _res = 50;
 	final double _xButtonSize = 60;
+	Styling style;
 	int exnum = 0;
 	Exercise ex;
 
@@ -117,17 +120,15 @@ class _HomeState extends State<Home> {
 	//Time tracking variables.
 	int _elapsedMs = 0, _min = 0, _msecs = 0, _secs = 0;
 	bool _canceled = true, rest = false, _alarmTriggered = false, _tswarnTriggered = false;
-	//Time time;
 
 	//NOTE: All of this is set later
-	//int _roundLen = 0; int _roundCurrent = 1; String _roundText;
 	Round round;
 
 	
 	//Update the time
   void _updateTime() {
 		setState( () {
-			var localms = ( _elapsedMs += _resolution ) ~/ 1000;
+			var localms = ( _elapsedMs += _res ) ~/ 1000;
 			_secs = localms % 60;
 			_min = localms ~/ 60;
 			_msecs = _elapsedMs % 1000; 
@@ -144,7 +145,7 @@ class _HomeState extends State<Home> {
 			( ! _alarmTriggered ) ? bell.play( 'eor.wav' ) : 0 ;
 			_alarmTriggered = true;
 
-			_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
+			_timer = Timer.periodic( new Duration( milliseconds: _res ), ( Timer t ) {
 				_updateTime();
 				if ( !_tswarnTriggered && !rest && ( _elapsedMs >= ( round.length - ex.warning ) ) ) {
 					bell.play( 'aeor.wav' );
@@ -160,7 +161,7 @@ class _HomeState extends State<Home> {
 						_elapsedMs = 0;
 						round.text = ( rest ) ? "REST" : "ROUND ${round.current}";
 						round.length = ( rest ) ? ex.rest : ex.length; 	
-						mainColor = ( rest ) ? Styling.rest : Styling.active; 	
+						mainColor = ( rest ) ? style.rest : style.active; 	
 						_tswarnTriggered = false;
 						bell.play( 'eor.wav' );
 					}
@@ -267,14 +268,14 @@ class _HomeState extends State<Home> {
 			_msecs = 0;
 			round = Round( 1, ex.length );
 			round.text = "ROUND ${round.current}";
-			mainColor = Styling.active; 	
+			mainColor = style.active; 	
     });
 	}
 
 
 	//Start the timer.
 	void _startTimer() {
-		_timer = Timer.periodic( new Duration( milliseconds: _resolution ), ( Timer t ) {
+		_timer = Timer.periodic( new Duration( milliseconds: _res ), ( Timer t ) {
 			_updateTime();
 			return t;
 		} );
@@ -283,64 +284,72 @@ class _HomeState extends State<Home> {
 
 	@override
 	initState() {
-		ex = Exercise.recall();
+		//ex = Exercise.recall();
+		ex = Exercise.types[ 1 ];
+		style = lightstyle;
 		round = Round( 1, ex.length );
 		round.text = "ROUND ${round.current}";
-		mainColor = Styling.active;
+		mainColor = style.active;
 		bell = new Audio( [ 'eor.wav', 'aeor.wav' ] );
 	}
 
   @override
   Widget build(BuildContext ctx) {
 		_ctx = ctx;
+	
     return Scaffold(
-      body: Center( child: Column(
-				crossAxisAlignment: CrossAxisAlignment.stretch,
-				children: <Widget>[ 
-					Spacer( flex: 1 )
-				,	new Row(
-					 children: <Widget>[
-							xButton( Icons.help, Colors.orange, _help )
-						, Spacer()
-						, xButton( Icons.restore, Colors.purple, _reset )
-						])
-				, new Row(
-						children: [
-						  Spacer()
-						, Center( child: Text(
-								ex.typestring,
-								textScaleFactor: 1.5, 
-								style: TextStyle( fontStyle: FontStyle.italic )
-							))
-						, Spacer()
-						])
-				, Spacer( flex: 1 )
-				, new Row( 
-						children: [ 
-						  Spacer()
-						, Center( child: watchButton() ) 
-						, Spacer()
-						] )
-				, Spacer( flex: 1 )
-				, new Row(
-						children: [
-						  Spacer()
-						, new Image.asset( 'assets/img/ibtw.png' )
-						, Spacer()
-						]) 
-				, Spacer( flex: 2 )
-				]
-			) ),
+      body: Container(
+				decoration: BoxDecoration( 
+					image: DecorationImage( 
+						image: AssetImage( style.bgImage )
+					, fit: BoxFit.cover
+					) 
+				),
+				child: Column(
+					crossAxisAlignment: CrossAxisAlignment.stretch,
+					children: <Widget>[ 
+						Spacer( flex: 1 )
+					,	new Row(
+						 children: <Widget>[
+								xButton( Icons.help, Colors.orange, _help )
+							, Spacer()
+							, xButton( Icons.restore, Colors.purple, _reset )
+							])
+					, new Row(
+							children: [
+								Spacer()
+							, Center( child: Text(
+									ex.typestring,
+									textScaleFactor: 1.5, 
+									style: TextStyle( fontStyle: FontStyle.italic )
+								))
+							, Spacer()
+							])
+					, Spacer( flex: 1 )
+					, new Row( 
+							children: [ 
+								Spacer()
+							, Center( child: watchButton() ) 
+							, Spacer()
+							] )
+					, Spacer( flex: 1 )
+					, new Row(
+							children: [
+								Spacer()
+							, new Image.asset( 'assets/img/ibtw.png' )
+							, Spacer()
+							]) 
+					, Spacer( flex: 2 )
+					]
+				) 
+			),
       floatingActionButton: settingsButton()
     );
   }
 }
 
 
-void main() => runApp( BoxingTimeApp() );
-
 class BoxingTimeApp extends StatefulWidget {
-
 	BoxingTimeApp({Key key}) : super(key: key);
 
 	@override
@@ -359,10 +368,14 @@ class _BoxingTimeAppState extends State<BoxingTimeApp> {
 		return MaterialApp(
 			title: app_title,
 			routes: {
-				"/": ( _ctx ) => new Home()
-			, "help": (ctx) => new HelpPage()
-			, "settings": (ctx) => new SettingsPage() 
+				"/": ( ctx ) => new Home()
+			, "help": ( ctx ) => new HelpPage()
+			, "settings": ( ctx ) => new SettingsPage() 
 			}
 		);
   }
 }
+
+
+void main() => runApp( BoxingTimeApp() );
+

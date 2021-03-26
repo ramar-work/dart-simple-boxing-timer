@@ -52,6 +52,9 @@ flutter:
       - assets/wav/aeor.wav
       - assets/img/ibts.png
       - assets/img/ibtw.png
+      - assets/img/bg-top-blue.png
+      - assets/img/bg-top-red.png
+      - assets/img/bg-top-white.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

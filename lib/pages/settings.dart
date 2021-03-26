@@ -13,8 +13,12 @@ class ExerciseInput extends StatefulWidget {
 	String field;
 	int initial;
 
-	ExerciseInput( {Key key, 
-		@required this.field, @required this.initial, @required this.updater} ) : super( key: key );
+	ExerciseInput( {
+		Key key, 
+		@required this.field, 
+		@required this.initial, 
+		@required this.updater
+	} ) : super( key: key );
 
 	@override
 	ExerciseInputState createState() => ExerciseInputState();
@@ -75,6 +79,15 @@ class _SettingsPageState extends State<SettingsPage> {
 		debugPrint( Exercise.string( _exercise ) );
 	}
 
+
+	//Generate a TableRow for spacer
+	TableRow tSpacer() {
+		return TableRow( children: [ 
+			TableCell( child: Text( "" ) ), 
+			TableCell( child: Text( "" ) ) ] 
+		);
+	}
+
 	
   @override
 	Widget build( BuildContext ctx ) {
@@ -132,12 +145,19 @@ class _SettingsPageState extends State<SettingsPage> {
 							, Table(
 								  defaultVerticalAlignment: TableCellVerticalAlignment.middle
 								,	children: [
-/*
 										TableRow( children: [
 											TableCell( child: Text( "Theme" ) )
-										, TableCell( child: Center( child: new Toggler( sel: 0, keys: [ "Light", "Dark" ] ) ) )
+										, TableCell( child: Align( 
+												alignment: Alignment.topRight,
+												child: new Toggler(
+													sel: 0
+												, keys: [ "Light", "Dark" ]
+												, upd: (int i) { 
+														;//_exercise.warning = i;
+													}
+												)
+											) )
 										])
-*/
 									/*
 									 	TableRow( children: [ 
 											TableCell( child: Text( "" ) ), 
@@ -154,9 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
 											) )
 										])
 									*/
-									 	TableRow( children: [ 
-											TableCell( child: Text( "" ) ), 
-											TableCell( child: Text( "" ) ) ] )
+									, tSpacer()
 									,	TableRow( children: [
 											TableCell( child: Text( "10 Second Warning" ) )
 										, TableCell( child: Align( 
@@ -170,9 +188,8 @@ class _SettingsPageState extends State<SettingsPage> {
 												)
 											) )
 										])
-									,	TableRow( children: [ 
-											TableCell( child: Text( "" ) ), 
-											TableCell( child: Text( "" ) ) ] )
+
+									, tSpacer()
 									,	TableRow( children: [
 											TableCell( child: Text( "Timer Type" ) )
 										, TableCell( 
@@ -180,7 +197,7 @@ class _SettingsPageState extends State<SettingsPage> {
 													alignment: Alignment.topRight,
 													child: new Toggler(
 														sel: 0
-													, keys: [ "Olympic", "Pro" ]
+													, keys: [ "Olympic", "Pro", "Custom" ]
 													, upd: (int i) { _exercise.type = i; }
 													)
 												)

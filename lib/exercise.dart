@@ -15,14 +15,11 @@ class Exercise {
 	int avg;
 
 	static List<Exercise> types = [
-/*
-		Exercise( "TEST"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 3 )
-	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
-	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
-*/
-		Exercise( "Kirk"   , 10 * 1000 , 3 * 1000 , 3 * 1000 , 4 )
-	, Exercise( "Spock"  , 20 * 1000 , 6 * 1000 , 3 * 1000 , 2 )
-	, Exercise( "Mccoy"  , 15 * 1000 , 9 * 1000 , 3 * 1000 , 3 )
+		Exercise( "TEST"   , 10 * 1000, 3 * 1000, 3 * 1000, 3 )
+	, Exercise( "Olympic", 10 * 1000, 5 * 1000, 3 * 1000, 3 )
+	, Exercise( "Pro"    , 10 * 1000, 5 * 1000, 3 * 1000, 12 )
+//, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
+//, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
 //, Exercise( "Custom" , -1, -1, -1, -1 )
 	];
 
@@ -49,9 +46,8 @@ class Exercise {
 			return types[ 1 ];
 		else if ( e.type == 1 )
 			return types[ 2 ];	
-		else if ( e.type == 2 ) //custom
-			return types[ 1 ];
-		else {
+		else { //custom or errors...
+			//double check user settings and make sure they make sense
 			return types[ 1 ];
 		}
 
