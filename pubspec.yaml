@@ -1,5 +1,5 @@
 name: ibt
-description: A new Flutter project.
+description: A boxing timer for testing your cardio limits.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -52,8 +52,6 @@ flutter:
       - assets/wav/aeor.wav
       - assets/img/ibts.png
       - assets/img/ibtw.png
-      - assets/img/bg-top-blue.png
-      - assets/img/bg-top-red.png
       - assets/img/bg-top-white.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

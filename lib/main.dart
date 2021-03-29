@@ -257,7 +257,9 @@ class _HomeState extends State<Home> {
 
 	//Stop the time
 	void _reset() {
-		_timer.cancel();
+		if ( _timer != null ) {
+			_timer.cancel();
+		}
 		_canceled = true;	
 		_alarmTriggered = false;
 		_tswarnTriggered = false;
