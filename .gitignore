@@ -54,3 +54,5 @@ android/gradley
 pubspec.lock
 assets/img/
 screenshots/
+keys
+key.sh

@@ -1,4 +1,4 @@
-package com.example.ibt
+package com.tubularmodularinc.ibt
 
 import io.flutter.embedding.android.FlutterActivity
 
