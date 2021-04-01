@@ -22,10 +22,8 @@ class Exercise {
 
 	static List<Exercise> types = [
 		Exercise( "TEST"   , 10 * 1000, 3 * 1000, 3 * 1000, 3 )
-	, Exercise( "Olympic", 10 * 1000, 5 * 1000, 3 * 1000, 3 )
-	, Exercise( "Pro"    , 10 * 1000, 5 * 1000, 3 * 1000, 12 )
-//, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
-//, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
+	, Exercise( "Olympic", 180 * 1000, 60 * 1000, 10 * 1000, 3 )
+	, Exercise( "Pro"    , 180 * 1000, 30 * 1000, 10 * 1000, 12 )
 //, Exercise( "Custom" , -1, -1, -1, -1 )
 	];
 
